@@ -64,7 +64,7 @@ class DncListItemRepository extends CommonRepository
     {
         $alias = $this->getTableAlias();
         $q     = $this->createQueryBuilder($this->getTableAlias());
-        $q->select('partial '.$alias.'.{id, value, channel, reason}')->orderBy(
+        $q->select('partial '.$alias.'.{id, name, channel, reason}')->orderBy(
             $alias.'.id', 'DESC'
         );
 
@@ -85,7 +85,7 @@ class DncListItemRepository extends CommonRepository
             $q,
             $filter,
             [
-                $alias.'.value',
+                $alias.'.name',
                 $alias.'.channel',
                 $alias.'.reason',
             ]
