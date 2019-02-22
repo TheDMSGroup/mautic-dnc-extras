@@ -12,6 +12,7 @@
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Controller;
 
 use Mautic\CoreBundle\Controller\FormController;
+use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -19,6 +20,21 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DoNotContactExtrasController extends FormController
 {
+
+    public function __construct()
+    {
+        $this->setStandardParameters(
+            'donotcontactextras.dnclistitem',
+            'plugin:donotcontactextras:items',
+            'donotcontactextras',
+            'donotcontactextras',
+            '',
+            'MauticDoNotContactExtrasBundle:DncListItem',
+            null,
+            'donotcontactextras'
+        );
+    }
+
     /**
      * @param int $page
      *
@@ -83,7 +99,7 @@ class DoNotContactExtrasController extends FormController
      */
     public function viewAction($objectId)
     {
-        return parent::viewStandard($objectId, 'dncListItem', 'plugin.dnc_extras');
+        return parent::viewStandard($objectId, 'dncListItem', 'plugin.donotcontactextras');
     }
 
     /**
@@ -133,80 +149,169 @@ class DoNotContactExtrasController extends FormController
         if ('view' == $view) {
             $session = $this->get('session');
 
-            /** @var \MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DoNotContactListItem $item */
+            /** @var \MauticPlugin\MauticMediaBundle\Entity\DncListItem $item */
             $item = $args['viewParameters']['item'];
 
-            // Setup page forms in session
-            $order = [
-                'date_added',
-                'DESC',
-            ];
-            if ('POST' == $this->request->getMethod()) {
-                $chartFilterValues = $this->request->request->has('media_chart')
-                    ? $this->request->request->get('media_chart')
-                    : $session->get('mautic.media.'.$item->getId().'.media_chart');
-                if ($this->request->request->has('orderby')) {
-                    $order[0] = $this->request->request->get('orderby');
-                }
-                if ($this->request->request->has('orderbydir')) {
-                    $order[1] = $this->request->request->get('orderbydir');
-                }
-            } else {
-                $chartFilterValues = $session->get('mautic.media.'.$item->getId().'.media_chart')
-                    ? $session->get('mautic.media.'.$item->getId().'.media_chart')
-                    : [
-                        'date_from' => $this->get('mautic.helper.core_parameters')->getParameter(
-                            'default_daterange_filter',
-                            'midnight -1 month'
-                        ),
-                        'date_to'   => 'midnight tomorrow -1 second',
-                        'type'      => '',
-                    ];
-            }
-
-            $session->set('mautic.media.'.$item->getId().'.media_chart', $chartFilterValues);
-
-            //Setup for the chart and stats datatable
-            /** @var \MauticPlugin\MauticMediaBundle\Model\MediaAccountModel $model */
-            $model = $this->getModel('media');
-
-            $unit = $model->getTimeUnitFromDateRange(
-                new \DateTime($chartFilterValues['date_from']),
-                new \DateTime($chartFilterValues['date_to'])
-            );
-
             $auditLog = $this->getAuditlogs($item);
-            $stats    = $model->getStats(
-                $item,
-                $unit,
-                new \DateTime($chartFilterValues['date_from']),
-                new \DateTime($chartFilterValues['date_to']),
-                isset($chartFilterValues['campaign']) ? $chartFilterValues['campaign'] : null
-            );
-
-            $chartFilterForm = $this->get('form.factory')->create(
-                'media_chart',
-                $chartFilterValues,
-                [
-                    'action' => $this->generateUrl(
-                        'mautic_media_action',
-                        [
-                            'objectAction' => 'view',
-                            'objectId'     => $item->getId(),
-                        ]
-                    ),
-                ]
-            );
 
             $args['viewParameters']['auditlog']        = $auditLog;
-            $args['viewParameters']['stats']           = $stats;
-            $args['viewParameters']['chartFilterForm'] = $chartFilterForm->createView();
-            $args['viewParameters']['order']           = $order;
-
-            unset($chartFilterValues['campaign']);
-            $session->set('mautic.media.'.$item->getId().'.media_chart', $chartFilterValues);
         }
 
         return $args;
+    }
+
+    protected function getModelName()
+    {
+        return 'donotcontactextras.dnclistitem';
+    }
+
+    /**
+     * @param array $args
+     * @param       $action
+     *
+     * @return array
+     */
+    protected function getPostActionRedirectArguments(array $args, $action)
+    {
+        $updateSelect = ('POST' == $this->request->getMethod())
+            ? $this->request->request->get('donotcontactextras[updateSelect]', false, true)
+            : $this->request->get(
+                'updateSelect',
+                false
+            );
+        if ($updateSelect) {
+            switch ($action) {
+                case 'new':
+                case 'edit':
+                    $passthrough             = $args['passthroughVars'];
+                    $passthrough             = array_merge(
+                        $passthrough,
+                        [
+                            'updateSelect' => $updateSelect,
+                            'id'           => $args['entity']->getId(),
+                            'name'         => $args['entity']->getName(),
+                        ]
+                    );
+                    $args['passthroughVars'] = $passthrough;
+                    break;
+            }
+        }
+
+        return $args;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getEntityFormOptions()
+    {
+        $updateSelect = ('POST' == $this->request->getMethod())
+            ? $this->request->request->get('donotcontactextras[updateSelect]', false, true)
+            : $this->request->get(
+                'updateSelect',
+                false
+            );
+        if ($updateSelect) {
+            return ['update_select' => $updateSelect];
+        }
+    }
+
+
+    /**
+     * Return array of options update select response.
+     *
+     * @param string $updateSelect HTML id of the select
+     * @param object $entity
+     * @param string $nameMethod   name of the entity method holding the name
+     * @param string $groupMethod  name of the entity method holding the select group
+     *
+     * @return array
+     */
+    protected function getUpdateSelectParams(
+        $updateSelect,
+        $entity,
+        $nameMethod = 'getName',
+        $groupMethod = 'getLanguage'
+    ) {
+        $options = [
+            'updateSelect' => $updateSelect,
+            'id'           => $entity->getId(),
+            'name'         => $entity->$nameMethod(),
+        ];
+
+        return $options;
+    }
+
+    /**
+     * @param DncListItem $dncListItem
+     * @param array|null   $filters
+     * @param array|null   $orderBy
+     * @param int          $page
+     * @param int          $limit
+     *
+     * @return array
+     */
+    protected function getAuditlogs(
+        DncListItem $dncListItem,
+        array $filters = null,
+        array $orderBy = null,
+        $page = 1,
+        $limit = 25
+    ) {
+        $session = $this->get('session');
+
+        if (null == $filters) {
+            $filters = $session->get(
+                'mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.filters',
+                [
+                    'search'        => '',
+                    'includeEvents' => [],
+                    'excludeEvents' => [],
+                ]
+            );
+        }
+
+        if (null == $orderBy) {
+            if (!$session->has('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby')) {
+                $session->set('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby', 'al.dateAdded');
+                $session->set('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderbydir', 'DESC');
+            }
+
+            $orderBy = [
+                $session->get('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby'),
+                $session->get('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderbydir'),
+            ];
+        }
+
+        // Audit Log
+        /** @var AuditLogModel $auditlogModel */
+        $auditlogModel = $this->getModel('core.auditLog');
+
+        $logs     = $auditlogModel->getLogForObject(
+            'donotcontactextras',
+            $dncListItem->getId(),
+            $dncListItem->getDateAdded()
+        );
+        $logCount = count($logs);
+
+        $types = [
+            'delete'     => $this->translator->trans('mautic.donotcontactextras.event.delete'),
+            'create'     => $this->translator->trans('mautic.donotcontactextras.event.create'),
+            'identified' => $this->translator->trans('mautic.donotcontactextras.event.identified'),
+            'ipadded'    => $this->translator->trans('mautic.donotcontactextras.event.ipadded'),
+            'merge'      => $this->translator->trans('mautic.donotcontactextras.event.merge'),
+            'update'     => $this->translator->trans('mautic.donotcontactextras.event.update'),
+        ];
+
+        return [
+            'events'   => $logs,
+            'filters'  => $filters,
+            'order'    => $orderBy,
+            'types'    => $types,
+            'total'    => $logCount,
+            'page'     => $page,
+            'limit'    => $limit,
+            'maxPages' => ceil($logCount / $limit),
+        ];
     }
 }

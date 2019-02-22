@@ -35,7 +35,7 @@ class DoNotContactExtrasPermissions extends AbstractPermissions
      */
     public function getName()
     {
-        return 'dnc_extras';
+        return 'donotcontactextras';
     }
 
     /**
@@ -46,6 +46,6 @@ class DoNotContactExtrasPermissions extends AbstractPermissions
      */
     public function buildForm(FormBuilderInterface &$builder, array $options, array $data)
     {
-        $this->addExtendedFormFields('dnc_extras', 'items', $builder, $data);
+        $this->addExtendedFormFields('donotcontactextras', 'items', $builder, $data);
     }
 }

@@ -9,13 +9,15 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-namespace MauticPlugin\MauticDoNotContactExtrasBundle;
+namespace MauticPlugin\MauticDoNotContactExtrasBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
+
 /**
  * Class DncListItem
  */
@@ -24,14 +26,22 @@ class DncListItem extends FormEntity
     /** @var int */
     private $id;
 
-    /** @var \DateTime */
-    private $dateAdded;
-
     /** @var */
     private $channel;
 
+    /** @var int
+     * see LeadBundle/Entity/DoNotContact
+     * must be 0:is_contactbale, 1:unsubscibed, 2:bounced, 3:manual
+     */
+    private $reason;
+
     /** @var string */
-    private $value;
+    private $description;
+
+    /** @var string
+     * used as the value - either email or phone
+     */
+    private $name;
 
     /**
      * @param ClassMetadata $metadata
@@ -39,9 +49,9 @@ class DncListItem extends FormEntity
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint(
-            'value',
+            'name',
             new NotBlank(
-                ['message' => 'mautic.dnc_extras.value.required']
+                ['message' => 'mautic.dnc_extras.name.required']
             )
         );
 
@@ -64,12 +74,9 @@ class DncListItem extends FormEntity
 
         $builder->addIdColumns();
 
-        $builder->addNamedField('dateAdded', 'datetime', 'date_added');
-
-        $builder->addNamedField('value', 'string', 'value', false);
-
         $builder->addNamedField('channel', 'string', 'channel', false);
 
+        $builder->addNamedField('reason', 'integer', 'reason', false);
     }
 
     /**
@@ -85,7 +92,9 @@ class DncListItem extends FormEntity
                     'id',
                     'dateAdded',
                     'channel',
-                    'value',
+                    'name',
+                    'reason',
+                    'description',
                 ]
             )
             ->addProperties(
@@ -93,7 +102,9 @@ class DncListItem extends FormEntity
                     'id',
                     'dateAdded',
                     'channel',
-                    'value',
+                    'name',
+                    'reason',
+                    'description',
                 ]
             )
             ->setGroupPrefix('AccountBasic')
@@ -102,9 +113,114 @@ class DncListItem extends FormEntity
                     'id',
                     'dateAdded',
                     'channel',
-                    'value',
+                    'name',
+                    'reason',
+                    'description',
                 ]
             )
             ->build();
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     * @return DncListItem
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getChannel()
+    {
+        return $this->channel;
+    }
+
+    /**
+     * @param int $id
+     * @return DncListItem
+     */
+    public function setChannel($channel)
+    {
+        $this->isChanged('channel', $channel);
+        $this->channel = $channel;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getReason()
+    {
+        return $this->reason;
+    }
+
+    /**
+     * @param int $id
+     * @return DncListItem
+     */
+    public function setReason($reason)
+    {
+        $this->isChanged('reason', $reason);
+        $this->reason = $reason;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     *
+     * @return DncListItem
+     */
+    public function setDescription($description)
+    {
+        $this->isChanged('description', $description);
+
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     *
+     * @return DncListItem
+     */
+    public function setName($name)
+    {
+        $this->isChanged('name', $name);
+
+        $this->name = $name;
+
+        return $this;
     }
 }
