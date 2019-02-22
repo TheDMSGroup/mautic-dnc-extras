@@ -99,11 +99,11 @@ class DncListItemType extends AbstractType
             [
                 'label'             => 'mautic.donotcontactextras.form.reason',
                 'label_attr'        => ['class' => 'control-label'],
-                'choices'           => [0 => "May Contact", 1 => "Unsubscribed", 2 => "Bounced", 3 => "Manually Added"],
+                'choices'           => [1 => "Unsubscribed", 2 => "Bounced", 3 => "Manually Added"],
                 'choices_as_values' => false,
                 'required'          => true,
                 'empty_data'              => 3,
-                'data'      => isset($options['data']) ? $options['data']->getReason() : 3,
+                'data'      => !empty($options['data']->getReason()) ? $options['data']->getReason() : 3,
                 'attr'              => [
                     'class'   => 'form-control',
                     'tooltip' => 'mautic.donotcontactextras.form.reason.tooltip',

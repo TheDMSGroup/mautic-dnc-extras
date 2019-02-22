@@ -21,6 +21,10 @@ return [
                 'path'       => '/dnc/{page}',
                 'controller' => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:index',
             ],
+            'mautic_donotcontactextras_view'  => [
+                'path'       => '/dnc/view/{objectId}',
+                'controller' => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:view',
+            ],
             'mautic_donotcontactextras_action' => [
                 'path'         => '/dnc/{objectAction}/{objectId}',
                 'controller'   => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:execute',

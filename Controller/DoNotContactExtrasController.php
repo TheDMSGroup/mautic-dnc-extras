@@ -193,6 +193,7 @@ class DoNotContactExtrasController extends FormController
                         ]
                     );
                     $args['passthroughVars'] = $passthrough;
+                    $args['contentTemplate'] = 'MauticDoNotContactExtrasBundle:DoNotContactController:view';
                     break;
             }
         }
@@ -313,5 +314,15 @@ class DoNotContactExtrasController extends FormController
             'limit'    => $limit,
             'maxPages' => ceil($logCount / $limit),
         ];
+    }
+
+    /**
+     * Get controller base if different than MauticDoNotContactExtrasBundle:DoNotContactExtras.
+     *
+     * @return string
+     */
+    protected function getControllerBase()
+    {
+        return 'MauticDoNotContactExtrasBundle:DoNotContactExtras';
     }
 }
