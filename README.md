@@ -1,5 +1,5 @@
 # Mautic Do Not Contact Extras [![Latest Stable Version](https://poser.pugx.org/thedmsgroup/mautic-dnc-extras/v/stable)](https://packagist.org/packages/thedmsgroup/mautic-dnc-extras) [![License](https://poser.pugx.org/thedmsgroup/mautic-dnc-extras/license)](https://packagist.org/packages/thedmsgroup/mautic-dnc-extras) [![Build Status](https://travis-ci.com/TheDMSGroup/mautic-health.svg?branch=master)](https://travis-ci.com/TheDMSGroup/mautic-dnc-extras)
-![](./Assets/img/do_not_contact.png)
+![](./Assets/img/donotcontactextras.png)
 
 This Bundle creates an additional Do Not Contact Entity type for managing an uploadable and
 editable list of items to reference as "add-on" DoNotContact Mautic Entities.
