@@ -1,0 +1,16 @@
+{
+  "name": "thedmsgroup/mautic-dnc-extras-bundle",
+  "description": "Adds custom DNC list items to be added to standard Mautic DNC lists and creates phpne and sms channels",
+  "keywords": ["mautic","marketing","marketing automation","plugin"],
+  "type": "mautic-plugin",
+  "require": {
+    "mautic/composer-plugin": "^1.0"
+  },
+  "license": "GPL-3.0-only",
+  "authors": [
+    {
+      "name": "Scott Shipman",
+      "email": "k.scott.shipman@gmail.com"
+    }
+  ]
+}
