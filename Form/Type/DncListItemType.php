@@ -16,6 +16,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
+use Mautic\LeadBundle\Model\LeadModel as ContactModel;
 
 /**
  * Class DncListItemType.
@@ -27,14 +28,21 @@ class DncListItemType extends AbstractType
      */
     private $security;
 
+    /** @var ContactModel */
+    private $contactModel;
+
     /**
-     * MediaAccountType constructor.
+     * DncListItemType constructor.
      *
      * @param CorePermissions $security
+     * @param ContactModel    $contactModel
      */
-    public function __construct(CorePermissions $security)
-    {
-        $this->security = $security;
+    public function __construct(
+        CorePermissions $security,
+        ContactModel $contactModel
+    ) {
+        $this->security     = $security;
+        $this->contactModel = $contactModel;
     }
 
     /**
@@ -54,6 +62,9 @@ class DncListItemType extends AbstractType
             $readonly = false;
             $data     = false;
         }
+
+        $channelChoices = array_flip($this->contactModel->getPreferenceChannels());
+
         $builder->addEventSubscriber(new FormExitSubscriber('donotcontactextras', $options));
 
         $builder->add(
@@ -72,7 +83,7 @@ class DncListItemType extends AbstractType
             [
                 'label'             => 'mautic.donotcontactextras.form.channel',
                 'label_attr'        => ['class' => 'control-label'],
-                'choices'           => ['email'=>'email', 'phone'=>'phone'],
+                'choices'           => $channelChoices,
                 'choices_as_values' => false,
                 'required'          => true,
                 'attr'              => [

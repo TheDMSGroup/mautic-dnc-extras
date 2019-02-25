@@ -21,7 +21,7 @@ return [
                 'path'       => '/dnc/{page}',
                 'controller' => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:index',
             ],
-            'mautic_donotcontactextras_view'  => [
+            'mautic_donotcontactextras_view'   => [
                 'path'       => '/dnc/view/{objectId}',
                 'controller' => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:view',
             ],
@@ -55,12 +55,12 @@ return [
     ],
     'services'     => [
         'events' => [
-            // 'mautic.dnc.dashboard.subscriber' => [
-            //     'class'     => 'MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\DashboardSubscriber',
-            //     'arguments' => [
-            //         'mautic.donotcontactactextras.model.health',
-            //     ],
-            // ],
+            'mautic.donotcontactextras.subscriber.channel' => [
+                'class'     => \MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\ChannelSubscriber::class,
+                'arguments' => [
+                    'mautic.helper.integration',
+                ],
+            ],
         ],
         'models' => [
             'mautic.donotcontactextras.model.dnclistitem' => [
@@ -71,7 +71,10 @@ return [
             'mautic.donotcontactextras.form.type.dnclistitem' => [
                 'class'     => 'MauticPlugin\MauticDoNotContactExtrasBundle\Form\Type\DncListItemType',
                 'alias'     => 'dnclistitem',
-                'arguments' => 'mautic.security',
+                'arguments' => [
+                    'mautic.security',
+                    'mautic.lead.model.lead',
+                ],
             ],
         ],
     ],
