@@ -25,6 +25,14 @@ return [
                 'path'       => '/dnc/view/{objectId}',
                 'controller' => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:view',
             ],
+            'mautic_dnc.import_index' => [
+                'path'       => '/dnc/custom/import/{page}',
+                'controller' => 'MauticDoNotContactExtrasBundle:Import:index',
+            ],
+            'mautic_dnc.import_action' => [
+                'path'       => '/dnc/custom/import/{objectAction}/{objectId}',
+                'controller' => 'MauticDoNotContactExtrasBundle:Import:execute',
+            ],
             'mautic_donotcontactextras_action' => [
                 'path'         => '/dnc/{objectAction}/{objectId}',
                 'controller'   => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:execute',
@@ -66,6 +74,15 @@ return [
             'mautic.donotcontactextras.model.dnclistitem' => [
                 'class' => 'MauticPlugin\MauticDoNotContactExtrasBundle\Model\DncListItemModel',
             ],
+            'mautic.donotcontactextras.model.dncimport' => [
+                'class'     => MauticPlugin\MauticDoNotContactExtrasBundle\Model\DncImportModel::class,
+                'arguments' => [
+                    'mautic.helper.paths',
+                    'mautic.donotcontactextras.model.dnclistitem',
+                    'mautic.core.model.notification',
+                    'mautic.helper.core_parameters',
+                ],
+            ],
         ],
         'forms'  => [
             'mautic.donotcontactextras.form.type.dnclistitem' => [
@@ -75,6 +92,15 @@ return [
                     'mautic.security',
                     'mautic.lead.model.lead',
                 ],
+            ],
+            'mautic.form.type.dnc_import' => [
+                'class' => 'MauticPlugin\MauticDoNotContactExtrasBundle\Form\Type\DncImportType',
+                'alias' => 'dnc_import',
+            ],
+            'mautic.form.type.dnc_field_import' => [
+                'class'     => 'MauticPlugin\MauticDoNotContactExtrasBundle\Form\Type\DncImportFieldType',
+                'arguments' => ['mautic.factory'],
+                'alias'     => 'dnc_field_import',
             ],
         ],
     ],

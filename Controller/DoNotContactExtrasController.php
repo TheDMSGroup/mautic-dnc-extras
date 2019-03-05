@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class DoNotContactExtrasController extends FormController
 {
-
     public function __construct()
     {
         $this->setStandardParameters(
@@ -217,7 +216,6 @@ class DoNotContactExtrasController extends FormController
         }
     }
 
-
     /**
      * Return array of options update select response.
      *
@@ -245,10 +243,10 @@ class DoNotContactExtrasController extends FormController
 
     /**
      * @param DncListItem $dncListItem
-     * @param array|null   $filters
-     * @param array|null   $orderBy
-     * @param int          $page
-     * @param int          $limit
+     * @param array|null  $filters
+     * @param array|null  $orderBy
+     * @param int         $page
+     * @param int         $limit
      *
      * @return array
      */
