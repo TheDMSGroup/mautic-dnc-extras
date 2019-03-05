@@ -1,5 +1,5 @@
 {
-  "name": "thedmsgroup/mautic-dnc-extras-bundle",
+  "name": "thedmsgroup/mautic-do-not-contact-extras-bundle",
   "description": "Adds custom DNC list items to be added to standard Mautic DNC lists and creates phpne and sms channels",
   "keywords": ["mautic","marketing","marketing automation","plugin"],
   "type": "mautic-plugin",
