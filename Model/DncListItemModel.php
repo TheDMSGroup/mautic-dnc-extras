@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: scottshipman
- * Date: 2019-02-21
- * Time: 17:22.
+/*
+ * @copyright   2014 Mautic Contributors. All rights reserved
+ * @author      Mautic
+ *
+ * @link        http://mautic.org
+ *
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Model;
@@ -11,6 +13,8 @@ namespace MauticPlugin\MauticDoNotContactExtrasBundle\Model;
 use Mautic\CoreBundle\Model\FormModel;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Mautic\CoreBundle\Helper\InputHelper;
+use Mautic\UserBundle\Entity\UserRepository;
 
 class DncListItemModel extends FormModel
 {
@@ -98,7 +102,7 @@ class DncListItemModel extends FormModel
         $fields    = array_flip($fields);
         $fieldData = [];
 
-        foreach ($fields as $dncField => $importField) {
+        foreach ($fields as $importField => $dncField) {
             // Prevent overwriting existing data with empty data
             if (array_key_exists($importField, $data) && !is_null($data[$importField]) && '' != $data[$importField]) {
                 /* TODO UPDATE THE IMPUT HELPER FOR THIS */
@@ -107,64 +111,46 @@ class DncListItemModel extends FormModel
         }
 
         $dncListItem   = $this->checkForDuplicateDncValue($fieldData);
-        $merged        = ($dncListItem->getId());
+        $merged        = $dncListItem->getId();
 
-        if (!empty($fields['dateAdded']) && !empty($data[$fields['dateAdded']])) {
-            $dateAdded = new DateTimeHelper($data[$fields['dateAdded']]);
-            $dncListItem->setDateAdded($dateAdded->getUtcDateTime());
-        }
-        unset($fieldData['dateAdded']);
+        // Not Merged
+        if(empty($merged))
+        {
+            if(filter_var($fieldData['name'], FILTER_VALIDATE_EMAIL))
+            {
+                $dncListItem->setChannel('email');
+            } else  {
+                $dncListItem->setChannel('phone');
+            }
+            $dncListItem->setName($fieldData['name']);
 
-        if (!empty($fields['dateModified']) && !empty($data[$fields['dateModified']])) {
-            $dateModified = new DateTimeHelper($data[$fields['dateModified']]);
-            $dncListItem->setDateModified($dateModified->getUtcDateTime());
-        }
-        unset($fieldData['dateModified']);
+            // For now, the reason is always 3 - Manual / Manually Added
+            $dncListItem->setReason(3);
 
-        if (!empty($fields['lastActive']) && !empty($data[$fields['lastActive']])) {
-            $lastActive = new DateTimeHelper($data[$fields['lastActive']]);
-            $dncListItem->setLastActive($lastActive->getUtcDateTime());
-        }
-        unset($fieldData['lastActive']);
+            $dateAdded = new \DateTime('now');
+            $dncListItem->setDateAdded($dateAdded);
 
-        if (!empty($fields['dateIdentified']) && !empty($data[$fields['dateIdentified']])) {
-            $dateIdentified = new DateTimeHelper($data[$fields['dateIdentified']]);
-            $dncListItem->setDateIdentified($dateIdentified->getUtcDateTime());
-        }
-        unset($fieldData['dateIdentified']);
 
-        if (!empty($fields['createdByUser']) && !empty($data[$fields['createdByUser']])) {
-            $userRepo      = $this->em->getRepository('MauticUserBundle:User');
-            $createdByUser = $userRepo->findByIdentifier($data[$fields['createdByUser']]);
-            if (null !== $createdByUser) {
-                $dncListItem->setCreatedBy($createdByUser);
+            if (!empty($owner)) {
+                $userRepo      = $this->em->getRepository('MauticUserBundle:User');
+                $createdByUser = $userRepo->find($owner);
+                if (null !== $createdByUser) {
+                    $dncListItem->setCreatedBy($createdByUser);
+                }
             }
         }
-        unset($fieldData['createdByUser']);
 
-        if (!empty($fields['modifiedByUser']) && !empty($data[$fields['modifiedByUser']])) {
+        $dateModified = new \DateTime('now');
+        $dncListItem->setDateModified($dateModified);
+
+        if (!empty($owner))
+        {
+            /* @var UserRepository $userRepo */
             $userRepo       = $this->em->getRepository('MauticUserBundle:User');
-            $modifiedByUser = $userRepo->findByIdentifier($data[$fields['modifiedByUser']]);
+            $modifiedByUser = $userRepo->find($owner);
             if (null !== $modifiedByUser) {
                 $dncListItem->setModifiedBy($modifiedByUser);
             }
-        }
-        unset($fieldData['modifiedByUser']);
-
-        if (!empty($fields['ownerusername']) && !empty($data[$fields['ownerusername']])) {
-            try {
-                $newOwner = $this->userProvider->loadUserByUsername($data[$fields['ownerusername']]);
-                $dncListItem->setOwner($newOwner);
-                //reset default import owner if exists owner for contact
-                $owner = null;
-            } catch (NonUniqueResultException $exception) {
-                // user not found
-            }
-        }
-        unset($fieldData['ownerusername']);
-
-        if (null !== $owner) {
-            $dncListItem->setOwner($this->em->getReference('MauticUserBundle:User', $owner));
         }
 
         if ($persist) {
@@ -175,21 +161,18 @@ class DncListItemModel extends FormModel
     }
 
     /**
-     * @param array            $queryFields
-     * @param DncListItem|null $dncValue
+     * @param array $fieldValue
      *
-     * @return array|Lead
+     * @return DncListItem|object|null
      */
     public function checkForDuplicateDncValue(array $fieldValue)
     {
         // look for existing record by $fieldValue
-        /* TODO FIX THIS LOOKUP ADD CRITERIA */
-        // $dncListItem = $this->getRepository()->findOneBy()
+        $dncListItem = $this->getRepository()->findOneBy(['name' => $fieldValue['name']]);
 
         if (empty($dncListItem)) {
             $dncListItem = new DncListItem();
         }
-
         return $dncListItem;
     }
 }

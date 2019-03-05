@@ -434,7 +434,7 @@ class ImportController extends FormController
 
             return new JsonResponse(['success' => 1, 'ignore_wdt' => 1]);
         } else {
-            $activeLink = '#mautic_dnc_index';
+            $activeLink = '#mautic_donotcontactextras_index';
 
             return $this->delegateView(
                 [
@@ -444,7 +444,7 @@ class ImportController extends FormController
                         'activeLink'    => $activeLink,
                         'mauticContent' => 'dncImport',
                         'route'         => $this->generateUrl(
-                            'mautic_import_action',
+                            'mautic_dnc.import_action',
                             [
                                 'object'       => $object,
                                 'objectAction' => 'new',
@@ -569,7 +569,7 @@ class ImportController extends FormController
      */
     private function resetImport($filepath, $removeCsv = true)
     {
-        $object  = $this->getObjectFromRequest();
+        $object  = 'dnc';
         $session = $this->get('session');
         $session->set('mautic.'.$object.'.import.headers', []);
         $session->set('mautic.'.$object.'.import.file', null);

@@ -16,13 +16,16 @@ use Mautic\CoreBundle\Helper\CoreParametersHelper;
 use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\CoreBundle\Helper\PathsHelper;
+use Mautic\CoreBundle\Helper\PhoneNumberHelper;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\CoreBundle\Model\NotificationModel;
+use Mautic\EmailBundle\Helper\EmailValidator;
 use Mautic\LeadBundle\Exception\ImportDelayedException;
 use Mautic\LeadBundle\Exception\ImportFailedException;
 use Mautic\LeadBundle\Helper\Progress;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncImport;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
+use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumberValidator;
 
 /**
  * Class DncImportModel.
@@ -48,6 +51,11 @@ class DncImportModel extends FormModel
      * @var CoreParametersHelper
      */
     protected $config;
+
+    /**
+     * @var PhoneNumberHelper
+     */
+    protected $phoneHelper;
 
     /**
      * ImportModel constructor.
@@ -196,7 +204,7 @@ class DncImportModel extends FormModel
      *
      * @param Import   $import
      * @param Progress $progress
-     * @param int      $limit    Number of records to import before delaying the import. 0 will import all
+     * @param int      $limit Number of records to import before delaying the import. 0 will import all
      *
      * @return bool
      */
@@ -220,7 +228,7 @@ class DncImportModel extends FormModel
      *
      * @param DncImport $import
      * @param Progress  $progress
-     * @param int       $limit    Number of records to import before delaying the import. 0 will import all
+     * @param int       $limit Number of records to import before delaying the import. 0 will import all
      *
      * @throws ImportFailedException
      * @throws ImportDelayedException
@@ -319,7 +327,7 @@ class DncImportModel extends FormModel
      *
      * @param DncImport $import
      * @param Progress  $progress
-     * @param int       $limit    Number of records to import before delaying the import
+     * @param int       $limit Number of records to import before delaying the import
      *
      * @return bool
      */
@@ -398,24 +406,30 @@ class DncImportModel extends FormModel
 
                 $data = array_combine($headers, $data);
 
-                try {
-                    $merged = $this->dncListItemModel->import(
-                        $import->getMatchedFields(),
-                        $data,
-                        $import->getDefault('owner'),
-                        $import->getId()
-                    );
+                $is_valid = $this->checkForValidValues($import->getMatchedFields(), $data);
 
-                    if ($merged) {
-                        $this->logDebug('Entity on line '.$lineNumber.' has been updated', $import);
-                        $import->increaseUpdatedCount();
-                    } else {
-                        $this->logDebug('Entity on line '.$lineNumber.' has been created', $import);
-                        $import->increaseInsertedCount();
+                if ($is_valid) {
+                    try {
+                        $merged = $this->dncListItemModel->import(
+                            $import->getMatchedFields(),
+                            $data,
+                            $import->getDefault('owner'),
+                            $import->getId()
+                        );
+
+                        if ($merged) {
+                            $this->logDebug('Entity on line '.$lineNumber.' has been updated', $import);
+                            $import->increaseUpdatedCount();
+                        } else {
+                            $this->logDebug('Entity on line '.$lineNumber.' has been created', $import);
+                            $import->increaseInsertedCount();
+                        }
+                    } catch (\Exception $e) {
+                        // Email validation likely failed
+                        $errorMessage = $e->getMessage();
                     }
-                } catch (\Exception $e) {
-                    // Email validation likely failed
-                    $errorMessage = $e->getMessage();
+                } else {
+                    $errorMessage = 'mautic.dnc.import.error.invalid_value';
                 }
             }
 
@@ -467,7 +481,7 @@ class DncImportModel extends FormModel
      * If it is more, return true.
      *
      * @param array &$data
-     * @param int   $headerCount
+     * @param int    $headerCount
      *
      * @return bool
      */
@@ -529,7 +543,7 @@ class DncImportModel extends FormModel
     /**
      * Get line chart data of imported rows.
      *
-     * @param string    $unit       {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param string    $unit {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
      * @param \DateTime $dateFrom
      * @param \DateTime $dateTo
      * @param string    $dateFormat
@@ -638,16 +652,46 @@ class DncImportModel extends FormModel
     /**
      * Logs a debug message if in dev environment.
      *
-     * @param string $msg
-     * @param Import $import
+     * @param string    $msg
+     * @param DncImport $import
      */
     protected function logDebug(
         $msg,
-        Import $import = null
+        DncImport $import = null
     ) {
         if (MAUTIC_ENV === 'dev') {
             $importId = $import ? '('.$import->getId().')' : '';
             $this->logger->debug(sprintf('IMPORT%s: %s', $importId, $msg));
         }
+    }
+
+    /**
+     * @param $fields
+     * @param $data
+     *
+     * @return bool
+     */
+    protected function checkForValidValues($fields, &$data)
+    {
+        $result = false;
+        $value = $data[$fields['name']];
+         if(filter_var($value, FILTER_VALIDATE_EMAIL))
+         {
+             $result = true;
+         } else {
+             if (!$this->phoneHelper) {
+                 $this->phoneHelper = new PhoneNumberHelper();
+             }
+             try {
+                 $normalized = $this->phoneHelper->format($value);
+                 if (!empty($normalized)) {
+                     $data[$fields['name']] = $normalized;
+                     $result = true;
+                 }
+             } catch (\Exception $e) {
+             }
+         }
+
+        return $result;
     }
 }

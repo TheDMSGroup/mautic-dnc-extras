@@ -18,7 +18,13 @@ $view['slots']->set('headerTitle', $view['translator']->trans('mautic.dnc.import
 $percent    = $progress->toPercent();
 $id         = ($complete) ? 'dncImportProgressComplete' : 'dncImportProgress';
 $header     = ($complete) ? 'mautic.dnc.import.success' : 'mautic.dnc.import.donotleave';
-$indexRoute = 'mautic_dnc_index';
+$indexRoute = 'mautic_donotcontactextras_index';
+
+echo $view['assets']->includeScript(
+    'plugins/MauticDoNotContactExtrasBundle/Assets/js/dnc.js',
+    'dncImportOnLoad',
+    'dncImportOnLoad'
+);
 ?>
 
 <div class="row ma-lg" id="<?php echo $id; ?>">
