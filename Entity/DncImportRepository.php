@@ -54,7 +54,7 @@ class DncImportRepository extends CommonRepository
             }
         }
 
-        $q = $this->getQueryForStatuses([Import::IN_PROGRESS]);
+        $q = $this->getQueryForStatuses([DncImport::IN_PROGRESS]);
         $q->select($this->getTableAlias())
             ->andWhere($q->expr()->lt($this->getTableAlias().'.dateModified', ':delay'))
             ->setParameter('delay', $dt);
@@ -116,7 +116,7 @@ class DncImportRepository extends CommonRepository
      */
     public function countImportsInProgress()
     {
-        return $this->countImportsWithStatuses([Import::IN_PROGRESS]);
+        return $this->countImportsWithStatuses([DncImport::IN_PROGRESS]);
     }
 
     public function getQueryForStatuses($statuses)

@@ -258,7 +258,7 @@ class DncImport extends FormEntity
     /**
      * @param string $dir
      *
-     * @return Import
+     * @return DncImport
      */
     public function setDir($dir)
     {
@@ -279,7 +279,7 @@ class DncImport extends FormEntity
     /**
      * @param string $file
      *
-     * @return Import
+     * @return DncImport
      */
     public function setFile($file)
     {
@@ -312,7 +312,7 @@ class DncImport extends FormEntity
      *
      * @param string $path
      *
-     * @return Import
+     * @return DncImport
      */
     public function setFilePath($path)
     {
@@ -343,7 +343,7 @@ class DncImport extends FormEntity
     /**
      * @param string $originalFile
      *
-     * @return Import
+     * @return DncImport
      */
     public function setOriginalFile($originalFile)
     {
@@ -374,7 +374,7 @@ class DncImport extends FormEntity
     /**
      * @param int $lineCount
      *
-     * @return Import
+     * @return DncImport
      */
     public function setLineCount($lineCount)
     {
@@ -395,7 +395,7 @@ class DncImport extends FormEntity
     /**
      * @param int $insertedCount
      *
-     * @return Import
+     * @return DncImport
      */
     public function setInsertedCount($insertedCount)
     {
@@ -406,7 +406,7 @@ class DncImport extends FormEntity
     }
 
     /**
-     * @return Import
+     * @return DncImport
      */
     public function increaseInsertedCount()
     {
@@ -424,7 +424,7 @@ class DncImport extends FormEntity
     /**
      * @param int $updatedCount
      *
-     * @return Import
+     * @return DncImport
      */
     public function setUpdatedCount($updatedCount)
     {
@@ -435,7 +435,7 @@ class DncImport extends FormEntity
     }
 
     /**
-     * @return Import
+     * @return DncImport
      */
     public function increaseUpdatedCount()
     {
@@ -453,7 +453,7 @@ class DncImport extends FormEntity
     /**
      * @param int $ignoredCount
      *
-     * @return Import
+     * @return DncImport
      */
     public function setIgnoredCount($ignoredCount)
     {
@@ -464,7 +464,7 @@ class DncImport extends FormEntity
     }
 
     /**
-     * @return Import
+     * @return DncImport
      */
     public function increaseIgnoredCount()
     {
@@ -508,7 +508,7 @@ class DncImport extends FormEntity
     /**
      * @param int $status
      *
-     * @return Import
+     * @return DncImport
      */
     public function setStatus($status)
     {
@@ -554,7 +554,7 @@ class DncImport extends FormEntity
     /**
      * @param int $dateStarted
      *
-     * @return Import
+     * @return DncImport
      */
     public function setDateStarted(\DateTime $dateStarted)
     {
@@ -575,7 +575,7 @@ class DncImport extends FormEntity
     /**
      * Modify the entity for the start of import.
      *
-     * @return Import
+     * @return DncImport
      */
     public function start()
     {
@@ -591,7 +591,7 @@ class DncImport extends FormEntity
     /**
      * Modify the entity for the end of import.
      *
-     * @return Import
+     * @return DncImport
      */
     public function end($removeFile = true)
     {
@@ -611,7 +611,7 @@ class DncImport extends FormEntity
     /**
      * @param int $dateEnded
      *
-     * @return Import
+     * @return DncImport
      */
     public function setDateEnded(\DateTime $dateEnded)
     {
@@ -691,7 +691,7 @@ class DncImport extends FormEntity
     /**
      * @param array $fields
      *
-     * @return Import
+     * @return DncImport
      */
     public function setMatchedFields(array $fields)
     {
@@ -704,7 +704,7 @@ class DncImport extends FormEntity
     /**
      * @param $line
      *
-     * @return Import
+     * @return DncImport
      */
     public function setLastLineImported($line)
     {
@@ -730,7 +730,7 @@ class DncImport extends FormEntity
     /**
      * @param array $properties
      *
-     * @return Import
+     * @return DncImport
      */
     public function setProperties($properties)
     {
@@ -743,7 +743,7 @@ class DncImport extends FormEntity
     /**
      * @param string $properties
      *
-     * @return Import
+     * @return DncImport
      */
     public function mergeToProperties($properties)
     {
@@ -770,7 +770,7 @@ class DncImport extends FormEntity
      * @param string $key
      * @param string $value
      *
-     * @return Import
+     * @return DncImport
      */
     public function setDefault($key, $value)
     {
@@ -794,7 +794,7 @@ class DncImport extends FormEntity
      *
      * @param array $headers
      *
-     * @return Import
+     * @return DncImport
      */
     public function setHeaders(array $headers)
     {
@@ -817,7 +817,7 @@ class DncImport extends FormEntity
      *
      * @param array $parser
      *
-     * @return Import
+     * @return DncImport
      */
     public function setParserConfig(array $parser)
     {
@@ -854,7 +854,7 @@ class DncImport extends FormEntity
     /**
      * @param string $info
      *
-     * @return Import
+     * @return DncImport
      */
     public function setStatusInfo($info)
     {
