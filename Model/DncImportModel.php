@@ -23,6 +23,7 @@ use Mautic\LeadBundle\Exception\ImportDelayedException;
 use Mautic\LeadBundle\Exception\ImportFailedException;
 use Mautic\LeadBundle\Helper\Progress;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncImport;
+use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncImportRepository;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 
 /**
@@ -341,7 +342,7 @@ class DncImportModel extends FormModel
             $file = new \SplFileObject($import->getFilePath());
         } catch (\Exception $e) {
             $import->setStatusInfo('SplFileObject cannot read the file. '.$e->getMessage());
-            $import->setStatus(Import::FAILED);
+            $import->setStatus(DncImport::FAILED);
             $this->logDebug('import cannot be processed because '.$import->getStatusInfo(), $import);
 
             return false;
