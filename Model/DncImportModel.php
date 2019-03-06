@@ -19,13 +19,11 @@ use Mautic\CoreBundle\Helper\PathsHelper;
 use Mautic\CoreBundle\Helper\PhoneNumberHelper;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\CoreBundle\Model\NotificationModel;
-use Mautic\EmailBundle\Helper\EmailValidator;
 use Mautic\LeadBundle\Exception\ImportDelayedException;
 use Mautic\LeadBundle\Exception\ImportFailedException;
 use Mautic\LeadBundle\Helper\Progress;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncImport;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
-use Misd\PhoneNumberBundle\Validator\Constraints\PhoneNumberValidator;
 
 /**
  * Class DncImportModel.
@@ -80,13 +78,13 @@ class DncImportModel extends FormModel
     /**
      * Returns the Import entity which should be processed next.
      *
-     * @return Import|null
+     * @return DncImport|null
      */
     public function getImportToProcess()
     {
-        $result = $this->getRepository()->getImportsWithStatuses([Import::QUEUED, Import::DELAYED], 1);
+        $result = $this->getRepository()->getImportsWithStatuses([DncImport::QUEUED, DncImport::DELAYED], 1);
 
-        if (isset($result[0]) && $result[0] instanceof Import) {
+        if (isset($result[0]) && $result[0] instanceof DncImport) {
             return $result[0];
         }
 
@@ -122,12 +120,12 @@ class DncImportModel extends FormModel
     /**
      * Generates a HTML link to the import detail.
      *
-     * @param Import $import
+     * @param DncImport $import
      *
      * @return string
      */
     public function generateLink(
-        Import $import
+        DncImport $import
     ) {
         return '<a href="'.$this->router->generate(
                 'mautic_dnc_import_action',
@@ -168,12 +166,12 @@ class DncImportModel extends FormModel
             '%status' => $this->translator->trans('mautic.dnc.import.status.'.$status),
         ];
 
-        /** @var Import $import */
+        /** @var DncImport $import */
         foreach ($imports as $import) {
             $import->setStatus($status)
                 ->setStatusInfo($this->translator->trans('mautic.dnc.import.max.runtime.hit', $infoVars));
 
-            if (Import::FAILED === $status) {
+            if (DncImport::FAILED === $status) {
                 $import->removeFile();
             }
 
@@ -202,14 +200,14 @@ class DncImportModel extends FormModel
      *
      * @deprecated in 2.13.0. To be removed in 3.0.0. Use beginImport instead
      *
-     * @param Import   $import
-     * @param Progress $progress
-     * @param int      $limit Number of records to import before delaying the import. 0 will import all
+     * @param DncImport $import
+     * @param Progress  $progress
+     * @param int       $limit    Number of records to import before delaying the import. 0 will import all
      *
      * @return bool
      */
     public function startImport(
-        Import $import,
+        DncImport $import,
         Progress $progress,
         $limit = 0
     ) {
@@ -228,7 +226,7 @@ class DncImportModel extends FormModel
      *
      * @param DncImport $import
      * @param Progress  $progress
-     * @param int       $limit Number of records to import before delaying the import. 0 will import all
+     * @param int       $limit    Number of records to import before delaying the import. 0 will import all
      *
      * @throws ImportFailedException
      * @throws ImportDelayedException
@@ -327,7 +325,7 @@ class DncImportModel extends FormModel
      *
      * @param DncImport $import
      * @param Progress  $progress
-     * @param int       $limit Number of records to import before delaying the import
+     * @param int       $limit    Number of records to import before delaying the import
      *
      * @return bool
      */
@@ -481,7 +479,7 @@ class DncImportModel extends FormModel
      * If it is more, return true.
      *
      * @param array &$data
-     * @param int    $headerCount
+     * @param int   $headerCount
      *
      * @return bool
      */
@@ -543,7 +541,7 @@ class DncImportModel extends FormModel
     /**
      * Get line chart data of imported rows.
      *
-     * @param string    $unit {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
+     * @param string    $unit       {@link php.net/manual/en/function.date.php#refsect1-function.date-parameters}
      * @param \DateTime $dateFrom
      * @param \DateTime $dateTo
      * @param string    $dateFormat
@@ -674,23 +672,22 @@ class DncImportModel extends FormModel
     protected function checkForValidValues($fields, &$data)
     {
         $result = false;
-        $value = $data[$fields['name']];
-         if(filter_var($value, FILTER_VALIDATE_EMAIL))
-         {
-             $result = true;
-         } else {
-             if (!$this->phoneHelper) {
-                 $this->phoneHelper = new PhoneNumberHelper();
-             }
-             try {
-                 $normalized = $this->phoneHelper->format($value);
-                 if (!empty($normalized)) {
-                     $data[$fields['name']] = $normalized;
-                     $result = true;
-                 }
-             } catch (\Exception $e) {
-             }
-         }
+        $value  = $data[$fields['name']];
+        if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $result = true;
+        } else {
+            if (!$this->phoneHelper) {
+                $this->phoneHelper = new PhoneNumberHelper();
+            }
+            try {
+                $normalized = $this->phoneHelper->format($value);
+                if (!empty($normalized)) {
+                    $data[$fields['name']] = $normalized;
+                    $result                = true;
+                }
+            } catch (\Exception $e) {
+            }
+        }
 
         return $result;
     }

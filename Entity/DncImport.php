@@ -203,7 +203,6 @@ class DncImport extends FormEntity
                     'insertedCount',
                     'updatedCount',
                     'ignoredCount',
-                    'priority',
                     'status',
                     'dateStarted',
                     'dateEnded',

@@ -18,15 +18,14 @@ $view['slots']->set(
         'MauticCoreBundle:Helper:page_actions.html.php',
         [
             'templateButtons' => [
-                'new' => true,
+                'new'    => true,
                 'import' => true,
             ],
-            'routeBase' => 'donotcontactextras',
-            'langVar'   => 'dncListItem',
+            'routeBase'     => 'donotcontactextras',
+            'langVar'       => 'dncListItem',
             'customButtons' => [
                 'import' => [
-                     'attr' =>
-                        [
+                     'attr' => [
                             'class'       => 'btn btn-default',
                             'href'        => $view['router']->path('mautic_dnc.import_index'),
                             'data-toggle' => 'ajax',
@@ -36,7 +35,7 @@ $view['slots']->set(
                     'primary'   => true,
                     'tooltip'   => 'View existing imports or Upload items using a new csv file.',
                 ],
-            ]
+            ],
         ]
     )
 );

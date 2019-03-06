@@ -14,14 +14,12 @@ namespace MauticPlugin\MauticDoNotContactExtrasBundle\Controller;
 use Mautic\CoreBundle\Controller\AjaxController as CommonAjaxController;
 use Mautic\CoreBundle\Controller\AjaxLookupControllerTrait;
 
-
 /**
  * Class AjaxController.
  */
 class AjaxController extends CommonAjaxController
 {
     use AjaxLookupControllerTrait;
-
 
     /**
      * @param Request $request

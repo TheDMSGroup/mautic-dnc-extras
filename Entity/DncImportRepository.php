@@ -79,7 +79,7 @@ class DncImportRepository extends CommonRepository
     {
         $q = $this->getQueryForStatuses($statuses);
         $q->select($this->getTableAlias())
-            ->orderBy($this->getTableAlias().'.priority', 'ASC')
+            ->orderBy($this->getTableAlias().'.id', 'ASC')
             ->addOrderBy($this->getTableAlias().'.dateAdded', 'DESC');
 
         if (null !== $limit) {

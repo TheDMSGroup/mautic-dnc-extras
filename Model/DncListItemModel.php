@@ -10,11 +10,11 @@
 
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Model;
 
+use Mautic\CoreBundle\Helper\InputHelper;
 use Mautic\CoreBundle\Model\FormModel;
+use Mautic\UserBundle\Entity\UserRepository;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Mautic\CoreBundle\Helper\InputHelper;
-use Mautic\UserBundle\Entity\UserRepository;
 
 class DncListItemModel extends FormModel
 {
@@ -114,12 +114,10 @@ class DncListItemModel extends FormModel
         $merged        = $dncListItem->getId();
 
         // Not Merged
-        if(empty($merged))
-        {
-            if(filter_var($fieldData['name'], FILTER_VALIDATE_EMAIL))
-            {
+        if (empty($merged)) {
+            if (filter_var($fieldData['name'], FILTER_VALIDATE_EMAIL)) {
                 $dncListItem->setChannel('email');
-            } else  {
+            } else {
                 $dncListItem->setChannel('phone');
             }
             $dncListItem->setName($fieldData['name']);
@@ -129,7 +127,6 @@ class DncListItemModel extends FormModel
 
             $dateAdded = new \DateTime('now');
             $dncListItem->setDateAdded($dateAdded);
-
 
             if (!empty($owner)) {
                 $userRepo      = $this->em->getRepository('MauticUserBundle:User');
@@ -143,8 +140,7 @@ class DncListItemModel extends FormModel
         $dateModified = new \DateTime('now');
         $dncListItem->setDateModified($dateModified);
 
-        if (!empty($owner))
-        {
+        if (!empty($owner)) {
             /* @var UserRepository $userRepo */
             $userRepo       = $this->em->getRepository('MauticUserBundle:User');
             $modifiedByUser = $userRepo->find($owner);
@@ -173,6 +169,7 @@ class DncListItemModel extends FormModel
         if (empty($dncListItem)) {
             $dncListItem = new DncListItem();
         }
+
         return $dncListItem;
     }
 }

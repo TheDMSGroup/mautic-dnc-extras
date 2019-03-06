@@ -8,7 +8,7 @@
  *
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
-if ($tmpl == 'index') {
+if ('index' == $tmpl) {
     $view->extend('MauticDoNotContactExtrasBundle:DncListItem:index.html.php');
 }
 ?>
@@ -102,7 +102,7 @@ if ($tmpl == 'index') {
                     </td>
                     <td class="visible-md visible-lg"><?php echo $item->getChannel(); ?></td>
                     <td class="visible-md visible-lg"><?php echo $view['translator']->trans('mautic.dnc.reason.'.$item->getReason()); ?></td>
-                    <td class="visible-md visible-lg"><?php echo $item->getDateAdded()->format("Y-m-d H:i:s"); ?></td>
+                    <td class="visible-md visible-lg"><?php echo $item->getDateAdded()->format('Y-m-d H:i:s'); ?></td>
                     <td class="visible-md visible-lg"><?php echo $item->getId(); ?></td>
                 </tr>
             <?php endforeach; ?>
