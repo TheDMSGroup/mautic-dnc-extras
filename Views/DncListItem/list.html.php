@@ -54,7 +54,7 @@ if ($tmpl == 'index') {
                     ]);
                      echo $view->render('MauticCoreBundle:Helper:tableheader.html.php', [
                         'sessionVar' => $sessionVar,
-                        'orderBy'    => 'dli.date_added',
+                        'orderBy'    => 'dli.dateAdded',
                         'text'       => $view['translator']->trans('mautic.donotcontactextras.form.dateadded'),
                         'class'      => 'visible-md visible-lg col-dnclistitem-dateadded',
                     ]);
