@@ -12,7 +12,6 @@ use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\LeadBundle\Entity\DoNotContact;
 use Mautic\LeadBundle\Entity\Lead;
 use Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent;
-use Mautic\LeadBundle\LeadEvents;
 
 //use Mautic\LeadBundle\Event\LeadDNCGetCountEvent;
 //use Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent;
@@ -127,7 +126,7 @@ class DncGetSubscriber extends CommonSubscriber
     /**
      * TODO: WIP.
      *
-     * @param LeadDNCGetCountEvent $event
+     * @param $event
      */
     public function onGetDncCount($event)
     {
@@ -140,7 +139,7 @@ class DncGetSubscriber extends CommonSubscriber
     /**
      * TODO: WIP.
      *
-     * @param LeadDNCGetListEvent $event
+     * @param $event
      */
     public function onGetDncList($event)
     {
