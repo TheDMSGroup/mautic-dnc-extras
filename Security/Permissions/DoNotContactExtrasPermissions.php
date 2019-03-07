@@ -15,7 +15,7 @@ use Mautic\CoreBundle\Security\Permissions\AbstractPermissions;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * Class MediaPermissions.
+ * Class DoNotContactExtrasPermissions.
  */
 class DoNotContactExtrasPermissions extends AbstractPermissions
 {
