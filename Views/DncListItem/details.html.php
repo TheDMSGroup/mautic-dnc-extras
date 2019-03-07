@@ -10,7 +10,7 @@
  */
 $view->extend('MauticCoreBundle:Default:content.html.php');
 $view['slots']->set('mauticContent', 'donotcontactextras');
-$view['slots']->set('headerTitle', 'Do Not Contact List Item '. ' - '.$item->getChannel() . ' : '. $item->getName());
+$view['slots']->set('headerTitle', 'Do Not Contact List Item '.' - '.$item->getChannel().' : '.$item->getName());
 
 // echo $view['assets']->includeScript(
 //     'plugins/MauticDoNotContactExtrasBundle/Assets/build/donotcontactextras.min.js',
