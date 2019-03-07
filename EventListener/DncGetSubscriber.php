@@ -78,7 +78,11 @@ class DncGetSubscriber extends CommonSubscriber
     }
 
     /**
-     * @param \Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent $event
+     * @param LeadDNCGetEntitiesEvent $event
+     *
+     * @return LeadDNCGetEntitiesEvent|void
+     *
+     * @throws \Exception
      */
     public function onGetDncEntities(LeadDNCGetEntitiesEvent $event)
     {
