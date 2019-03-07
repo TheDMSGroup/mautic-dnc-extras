@@ -12,14 +12,14 @@
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
-use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 
 /**
- * Class DncListItem
+ * Class DncListItem.
  */
 class DncListItem extends FormEntity
 {
@@ -131,6 +131,7 @@ class DncListItem extends FormEntity
 
     /**
      * @param int $id
+     *
      * @return DncListItem
      */
     public function setId($id)
@@ -150,6 +151,7 @@ class DncListItem extends FormEntity
 
     /**
      * @param int $id
+     *
      * @return DncListItem
      */
     public function setChannel($channel)
@@ -170,6 +172,7 @@ class DncListItem extends FormEntity
 
     /**
      * @param int $id
+     *
      * @return DncListItem
      */
     public function setReason($reason)

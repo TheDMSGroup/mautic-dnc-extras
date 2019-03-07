@@ -61,10 +61,9 @@ return [
                     'mautic.helper.integration',
                 ],
             ],
-            'mautic.donotcontactextras.subscriber.dnc' => [
+            'mautic.donotcontactextras.subscriber.dncget' => [
                 'class'     => \MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\DncGetSubscriber::class,
-                'arguments' => [
-                ],
+                'arguments' => [],
             ],
         ],
         'models' => [

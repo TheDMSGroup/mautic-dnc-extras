@@ -3,42 +3,37 @@
  * Created by PhpStorm.
  * User: nbush
  * Date: 3/5/19
- * Time: 10:39 AM
+ * Time: 10:39 AM.
  */
 
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\EventListener;
 
-
-use Doctrine\DBAL\Exception\NonUniqueFieldNameException;
-use Doctrine\ORM\NoResultException;
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\LeadBundle\Entity\DoNotContact;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\LeadBundle\Entity\LeadField;
-use Mautic\LeadBundle\Event\LeadDNCGetCountEvent;
 use Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent;
-use Mautic\LeadBundle\Event\LeadDNCGetListEvent;
 use Mautic\LeadBundle\LeadEvents;
-use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
+
+//use Mautic\LeadBundle\Event\LeadDNCGetCountEvent;
+//use Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent;
+//use Mautic\LeadBundle\Event\LeadDNCGetListEvent;
 
 /**
- * Class DncGetSubscriber
- * @package MauticPlugin\MauticDoNotContactExtrasBundle\EventListener
+ * Class DncGetSubscriber.
  */
 class DncGetSubscriber extends CommonSubscriber
 {
-
     /**
-     * {@inherit_doc}
+     * {@inherit_doc}.
      *
      * @return array
      */
     public static function getSubscribedEvents()
     {
         return [
-            LeadEvents::GET_DNC_COUNT    => ['getDncCount', 0],
-            LeadEvents::GET_DNC_ENTITIES => ['getDncEntities', 0],
-            LeadEvents::GET_DNC_LIST     => ['getDncList', 0],
+            LeadEvents::GET_DNC_COUNT    => ['onGetDncCount', 0],
+            LeadEvents::GET_DNC_ENTITIES => ['onGetDncEntities', 0],
+            LeadEvents::GET_DNC_LIST     => ['onGetDncList', 0],
         ];
     }
 
@@ -51,8 +46,9 @@ class DncGetSubscriber extends CommonSubscriber
     }
 
     /**
-     * Returns an array of lead field values to look for in the DNC list based on channel
-     * @param Lead $lead
+     * Returns an array of lead field values to look for in the DNC list based on channel.
+     *
+     * @param Lead   $lead
      * @param string $channel
      *
      * @return mixed
@@ -60,85 +56,99 @@ class DncGetSubscriber extends CommonSubscriber
     protected function getChannelFieldValues(Lead $lead, $channel)
     {
         $channelFieldValues = [];
-        $type = 'email' === $channel ? 'email' : 'tel';
 
-        $dbalQb = $this->em->getConnection()->createQueryBuilder();
+        switch ($channel) {
+            case 'email':
+                if ($lead->getEmail()) {
+                    $channelFieldValues[] = $lead->getEmail();
+                }
+                break;
 
-        $leadFields = $dbalQb
-            ->select('lf.alias')
-            ->from('lead_fields', 'lf')
-            ->where(
-                $dbalQb->expr()->eq('lf.type', $type)
-            )
-            ->execute();
-
-        /** @var LeadField $leadField */
-        foreach($leadFields as $leadField) {
-            if (null !== ($value = $lead->getFieldValue($leadField->getAlias()))) {
-                $channelFieldValues[] = $value;
-            }
+            case 'sms':
+            case 'phone':
+            default:
+                if ($lead->getPhone()) {
+                    $channelFieldValues[] = $lead->getPhone();
+                }
+                if ($lead->getMobile()) {
+                    $channelFieldValues[] = $lead->getMobile();
+                }
         }
 
         return $channelFieldValues;
     }
- 
+
     /**
-     * @param LeadDNCGetEntitiesEvent $event
+     * @param \Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent $event
      */
-    public function getDncEntities(LeadDNCGetEntitiesEvent $event)
+    public function onGetDncEntities(LeadDNCGetEntitiesEvent $event)
     {
-        $pluginEntities = [];
+        $lead    =  $event->getLead();
+        $channel = $event->getChannel();
 
-        $ormQb = $this->getDncItemRepository()->createQueryBuilder('dnc');
-
-        $dncSearch = $this->getChannelFieldValues($event->getLead(), $event->getChannel());
-
+        $dncSearch = $this->getChannelFieldValues($lead, $channel);
         if (empty($dncSearch)) {
             return;
         }
 
-        $ormQb->where(
-            $ormQb->expr()->eq('dnc.channel', $event->getChannel()),
-            $ormQb->expr()->in('dnc.name', $dncSearch)
-        );
+        $dbalQb = $this->em->getConnection()->createQueryBuilder()
+            ->select('dnc.reason, dnc.date_added')
+            ->from('dnc_extras_list_items', 'dnc')
+            ->where('dnc.channel = :channel')
+            ->setParameter('channel', $channel);
 
-        if (false !== ($results = $ormQb->getQuery()->execute())) {
-            /** @var DncListItem $result */
+        if (1 < count($dncSearch)) {
+            $dbalQb->andWhere(
+                $dbalQb->expr()->in('dnc.name', $dncSearch)
+            );
+        } else {
+            $dbalQb->andWhere('dnc.name = :search')
+            ->setParameter('search', $dncSearch[0]);
+        }
+
+        if (false !== ($results = $dbalQb->execute())) {
             foreach ($results as $result) {
-                $fauxEntity= new DoNotContact();
-                $fauxEntity->setChannel($event->getChannel());
-                $fauxEntity->setLead($event->getLead());
-                $fauxEntity->setReason($result->getReason();
-                $fauxEntity->setDateAdded($result->getDateAdded());
+                $fauxEntity = new DoNotContact();
+                $fauxEntity->setChannel($channel);
+                $fauxEntity->setLead($lead);
+                $fauxEntity->setReason($result['reason']);
+                $fauxEntity->setDateAdded(new \DateTime($result['date_added']));
                 $pluginEntities[] = $fauxEntity;
             }
+            unset($results);
         }
-        $event->addDNCEntities($pluginEntities);
+        if (!empty($pluginEntities)) {
+            $event->addDNCEntities($pluginEntities);
+        }
+
+        return $event;
     }
 
-/**
- * TODO: WIP
- * @param LeadDNCGetCountEvent $event
- */
-public function getDncCount(LeadDNCGetCountEvent $event)
-{
-    $count = 0;
-    $dbalQb = $this->em->getConnection()->createQueryBuilder();
-    // $count = $dbalQb->getFirstResult()[0];
-
-    $event->setDNCCount($event->getDNCCount() + $count);
-}
     /**
-     * TODO: WIP
+     * TODO: WIP.
+     *
+     * @param LeadDNCGetCountEvent $event
+     */
+    public function onGetDncCount($event)
+    {
+        $count  = 0;
+        //$dbalQb = $this->em->getConnection()->createQueryBuilder();
+        // $count = $dbalQb->getFirstResult()[0];
+        $event->setDNCCount($event->getDNCCount() + $count);
+    }
+
+    /**
+     * TODO: WIP.
+     *
      * @param LeadDNCGetListEvent $event
      */
-    public function getDncList(LeadDNCGetListEvent $event)
+    public function onGetDncList($event)
     {
         $dbalQb = $this->em->getConnection()->createQueryBuilder()
             ->from(MAUTIC_TABLE_PREFIX.'dnc_extra_list_items', 'dnc');
-        ;
 
-        /*            ->from(MAUTIC_TABLE_PREFIX.'lead_donotcontact', 'dnc')
+        /*
+            ->from(MAUTIC_TABLE_PREFIX.'lead_donotcontact', 'dnc')
             ->leftJoin('dnc', MAUTIC_TABLE_PREFIX.'leads', 'l', 'l.id = dnc.lead_id');
         if (null === $event->getChannel()) {
             $q->select('dnc.channel, dnc.reason, l.id as lead_id');

@@ -3,19 +3,17 @@
  * Created by PhpStorm.
  * User: scottshipman
  * Date: 2019-02-21
- * Time: 17:22
+ * Time: 17:22.
  */
 
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Model;
 
 use Mautic\CoreBundle\Model\FormModel;
-use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItemRepository;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class DncListItemModel extends FormModel
 {
-
     /**
      * @return string
      */
@@ -81,5 +79,4 @@ class DncListItemModel extends FormModel
 
         return parent::getEntity($id);
     }
-
 }

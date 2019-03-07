@@ -13,8 +13,8 @@ namespace MauticPlugin\MauticDoNotContactExtrasBundle\EventListener;
 
 use Mautic\ChannelBundle\ChannelEvents;
 use Mautic\ChannelBundle\Event\ChannelEvent;
-use Mautic\LeadBundle\Model\LeadModel;
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
+use Mautic\LeadBundle\Model\LeadModel;
 use Mautic\PluginBundle\Helper\IntegrationHelper;
 
 /**
@@ -56,11 +56,11 @@ class ChannelSubscriber extends CommonSubscriber
         if ($integration && $integration->getIntegrationSettings()->isPublished()) {
             $event->addChannel(
                 'phone',
-                [LeadModel::CHANNEL_FEATURE   => [],]
+                [LeadModel::CHANNEL_FEATURE   => []]
             );
             $event->addChannel(
                 'sms',
-                [LeadModel::CHANNEL_FEATURE   => [],]
+                [LeadModel::CHANNEL_FEATURE   => []]
             );
         }
     }

@@ -11,12 +11,12 @@
 
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Form\Type;
 
+use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
 use Mautic\CoreBundle\Security\Permissions\CorePermissions;
+use Mautic\LeadBundle\Model\LeadModel as ContactModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Mautic\CoreBundle\Form\EventListener\FormExitSubscriber;
-use Mautic\LeadBundle\Model\LeadModel as ContactModel;
 
 /**
  * Class DncListItemType.
@@ -51,7 +51,6 @@ class DncListItemType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
         if (!empty($options['data']) && $options['data']->getId()) {
             $readonly = !$this->security->isGranted('plugin:donotcontactextras:items:publish');
             $data     = $options['data']->isPublished(true);
@@ -71,9 +70,9 @@ class DncListItemType extends AbstractType
             'isPublished',
             'yesno_button_group',
             [
-                'read_only' => $readonly,
+                'read_only'       => $readonly,
                 'empty_data'      => true,
-                'data'      => isset($options['data']) ? $options['data']->getIsPublished() : true,
+                'data'            => isset($options['data']) ? $options['data']->getIsPublished() : true,
             ]
         );
 
@@ -108,14 +107,14 @@ class DncListItemType extends AbstractType
             'reason',
             'choice',
             [
-                'label'             => 'mautic.donotcontactextras.form.reason',
-                'label_attr'        => ['class' => 'control-label'],
-                'choices'           => [1 => "Unsubscribed", 2 => "Bounced", 3 => "Manually Added"],
-                'choices_as_values' => false,
-                'required'          => true,
+                'label'                   => 'mautic.donotcontactextras.form.reason',
+                'label_attr'              => ['class' => 'control-label'],
+                'choices'                 => [1 => 'Unsubscribed', 2 => 'Bounced', 3 => 'Manually Added'],
+                'choices_as_values'       => false,
+                'required'                => true,
                 'empty_data'              => 3,
-                'data'      => !empty($options['data']->getReason()) ? $options['data']->getReason() : 3,
-                'attr'              => [
+                'data'                    => !empty($options['data']->getReason()) ? $options['data']->getReason() : 3,
+                'attr'                    => [
                     'class'   => 'form-control',
                     'tooltip' => 'mautic.donotcontactextras.form.reason.tooltip',
                 ],
@@ -126,8 +125,8 @@ class DncListItemType extends AbstractType
             'description',
             'text',
             [
-                'label'      => 'mautic.donotcontactextras.form.description',
-                'label_attr' => ['class' => 'control-label'],
+                'label'             => 'mautic.donotcontactextras.form.description',
+                'label_attr'        => ['class' => 'control-label'],
                 'attr'              => [
                     'class'   => 'form-control',
                     'tooltip' => 'mautic.donotcontactextras.form.description.tooltip',
