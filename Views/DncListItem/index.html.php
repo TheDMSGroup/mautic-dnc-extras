@@ -24,14 +24,14 @@ $view['slots']->set(
             'routeBase'     => 'donotcontactextras',
             'langVar'       => 'dncListItem',
             'customButtons' => [
-                'import' => [
+                'imports' => [
                      'attr' => [
                             'class'       => 'btn btn-default',
                             'href'        => $view['router']->path('mautic_dnc.import_index'),
                             'data-toggle' => 'ajax',
                         ],
                     'iconClass' => 'fa fa-upload',
-                    'btnText'   => $view['translator']->trans('mautic.core.form.import'),
+                    'btnText'   => $view['translator']->trans('mautic.dnc.form.import.button'),
                     'primary'   => true,
                     'tooltip'   => 'View existing imports or Upload items using a new csv file.',
                 ],

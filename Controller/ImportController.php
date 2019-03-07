@@ -163,7 +163,7 @@ class ImportController extends FormController
         /** @var \MauticPlugin\MauticDoNotContactExtrasBundle\Model\DncImportModel $importModel */
         $importModel = $this->getModel($this->getModelName());
 
-        if (!$this->get('mautic.security')->isGranted('donotcontactextras:imports:create')) {
+        if (!$this->get('mautic.security')->isGranted('donotcontactextras:items:create')) {
             return $this->accessDenied();
         }
 
