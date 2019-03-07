@@ -608,7 +608,7 @@ class DncImportModel extends FormModel
      */
     public function getPermissionBase()
     {
-        return 'donotcontactextras:imports';
+        return 'donotcontactextras:items';
     }
 
     /**
