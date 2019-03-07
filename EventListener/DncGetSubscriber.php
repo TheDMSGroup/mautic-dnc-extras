@@ -11,11 +11,6 @@ namespace MauticPlugin\MauticDoNotContactExtrasBundle\EventListener;
 use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\LeadBundle\Entity\DoNotContact;
 use Mautic\LeadBundle\Entity\Lead;
-use Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent;
-
-//use Mautic\LeadBundle\Event\LeadDNCGetCountEvent;
-//use Mautic\LeadBundle\Event\LeadDNCGetEntitiesEvent;
-//use Mautic\LeadBundle\Event\LeadDNCGetListEvent;
 
 /**
  * Class DncGetSubscriber.
@@ -78,13 +73,13 @@ class DncGetSubscriber extends CommonSubscriber
     }
 
     /**
-     * @param LeadDNCGetEntitiesEvent $event
+     * @param $event
      *
-     * @return LeadDNCGetEntitiesEvent|void
+     * @return mixed|void
      *
      * @throws \Exception
      */
-    public function onGetDncEntities(LeadDNCGetEntitiesEvent $event)
+    public function onGetDncEntities($event)
     {
         $lead    =  $event->getLead();
         $channel = $event->getChannel();
