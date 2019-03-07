@@ -31,9 +31,9 @@ class DncGetSubscriber extends CommonSubscriber
     public static function getSubscribedEvents()
     {
         return [
-            LeadEvents::GET_DNC_COUNT    => ['onGetDncCount', 0],
-            LeadEvents::GET_DNC_ENTITIES => ['onGetDncEntities', 0],
-            LeadEvents::GET_DNC_LIST     => ['onGetDncList', 0],
+            'mautic.dnc_get_count'    => ['onGetDncCount', 0],
+            'mautic.dnc_get_entities' => ['onGetDncEntities', 0],
+            'mautic.dnc_get_list'     => ['onGetDncList', 0],
         ];
     }
 
