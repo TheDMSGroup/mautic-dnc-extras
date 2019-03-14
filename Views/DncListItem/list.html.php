@@ -95,7 +95,7 @@ if ('index' == $tmpl) {
                             ['item' => $item, 'model' => 'donotcontactextras.dnclistitem', 'disableToggle' => false]
                         ); ?>
                         <a href="<?php echo $view['router']->path(
-                            'mautic_contactfield_action',
+                            'mautic_donotcontactextras_action',
                             ['objectAction' => 'edit', 'objectId' => $item->getId()]
                         ); ?>"><?php echo $item->getName(); ?></a>
                     </span>
