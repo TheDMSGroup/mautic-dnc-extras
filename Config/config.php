@@ -42,6 +42,14 @@ return [
                 ],
             ],
         ],
+        'api' => [
+            'mautic_api_donotcontactextras_standard'      => [
+                'standard_entity' => true,
+                'name'            => 'donotcontactextras.dnclistitem',
+                'path'            => '/dnc',
+                'controller'      => 'MauticDoNotContactExtrasBundle:Api\Api',
+            ],
+        ],
     ],
     'menu'         => [
         'main' => [

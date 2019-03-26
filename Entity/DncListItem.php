@@ -107,32 +107,15 @@ class DncListItem extends FormEntity
      */
     public static function loadApiMetadata(ApiMetadataDriver $metadata)
     {
-        $metadata->setGroupPrefix('Account')
+        $metadata->setGroupPrefix('dnclistitem')
             ->addListProperties(
                 [
-                    'id',
-                    'dateAdded',
                     'channel',
                     'name',
-                    'reason',
-                    'description',
                 ]
             )
             ->addProperties(
                 [
-                    'id',
-                    'dateAdded',
-                    'channel',
-                    'name',
-                    'reason',
-                    'description',
-                ]
-            )
-            ->setGroupPrefix('AccountBasic')
-            ->addListProperties(
-                [
-                    'id',
-                    'dateAdded',
                     'channel',
                     'name',
                     'reason',
