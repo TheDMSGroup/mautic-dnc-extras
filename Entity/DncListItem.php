@@ -98,6 +98,8 @@ class DncListItem extends FormEntity
         $builder->addNamedField('reason', 'integer', 'reason', false);
 
         $builder->addUniqueConstraint(['name', 'channel'], 'name_channel');
+
+        $builder->addIndex(['name'], 'name');
     }
 
     /**
