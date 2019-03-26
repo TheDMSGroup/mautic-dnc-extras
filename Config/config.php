@@ -12,7 +12,7 @@
 return [
     'name'        => 'Do Not Contact Extras',
     'description' => 'Adds a custom DNC entity and list, by channel',
-    'version'     => '1.0',
+    'version'     => '1.1',
     'author'      => 'Mautic',
 
     'routes'       => [

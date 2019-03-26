@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -51,14 +52,24 @@ class DncListItem extends FormEntity
         $metadata->addPropertyConstraint(
             'name',
             new NotBlank(
-                ['message' => 'mautic.dnc_extras.name.required']
+                ['message' => 'mautic.dnc.name.required']
             )
         );
 
         $metadata->addPropertyConstraint(
             'channel',
             new NotBlank(
-                ['message' => 'mautic.dnc_extras.channel.required']
+                ['message' => 'mautic.dnc.channel.required']
+            )
+        );
+
+        $metadata->addConstraint(
+            new UniqueEntity(
+                [
+                    'fields'           => ['name', 'channel'],
+                    'message'          => 'mautic.dnc.name_channel.unique',
+                    'repositoryMethod' => 'checkUniqueNameChannel',
+                ]
             )
         );
     }
@@ -77,6 +88,8 @@ class DncListItem extends FormEntity
         $builder->addNamedField('channel', 'string', 'channel', false);
 
         $builder->addNamedField('reason', 'integer', 'reason', false);
+
+        $builder->addUniqueConstraint(['name', 'channel'], 'name_channel');
     }
 
     /**
