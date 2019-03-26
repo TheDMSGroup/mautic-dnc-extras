@@ -194,6 +194,23 @@ class DncListItemModel extends FormModel
 
         switch ($action) {
             case 'pre_save':
+
+                // Normalize entries on pre-save, in case it is via API or import possibly skipping form validators.
+                $name  = DncEvents::PRE_SAVE;
+                $value = trim($entity->getName());
+                if ($entity->getChannel() !== 'email') {
+                    if (!$this->phoneHelper) {
+                        $this->phoneHelper = new PhoneNumberHelper();
+                    }
+                    try {
+                        $normalized = $this->phoneHelper->format($value);
+                        if (!empty($normalized)) {
+                            $entity->setName($normalized);
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
+
                 break;
             case 'post_save':
                 $name = DncEvents::POST_SAVE;
