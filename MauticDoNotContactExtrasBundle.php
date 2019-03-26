@@ -17,7 +17,7 @@ use Mautic\PluginBundle\Bundle\PluginBundleBase;
 use Mautic\PluginBundle\Entity\Plugin;
 
 /**
- * Class MauticDoNotContactExtrasBundle
+ * Class MauticDoNotContactExtrasBundle.
  */
 class MauticDoNotContactExtrasBundle extends PluginBundleBase
 {

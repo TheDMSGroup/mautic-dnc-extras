@@ -138,5 +138,4 @@ class DncListItemRepository extends CommonRepository
             [$this->getTableAlias().'.id', 'DESC'],
         ];
     }
-
 }

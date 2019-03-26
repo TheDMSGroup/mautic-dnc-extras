@@ -17,8 +17,8 @@ use Mautic\UserBundle\Entity\UserRepository;
 use MauticPlugin\MauticDoNotContactExtrasBundle\DncEvents;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Event\DncEvent;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class DncListItemModel extends FormModel
 {
@@ -198,7 +198,7 @@ class DncListItemModel extends FormModel
                 // Normalize entries on pre-save, in case it is via API or import possibly skipping form validators.
                 $name  = DncEvents::PRE_SAVE;
                 $value = trim($entity->getName());
-                if ($entity->getChannel() !== 'email') {
+                if ('email' !== $entity->getChannel()) {
                     if (!$this->phoneHelper) {
                         $this->phoneHelper = new PhoneNumberHelper();
                     }

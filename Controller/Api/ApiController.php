@@ -11,12 +11,8 @@
 
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Controller\Api;
 
-use FOS\RestBundle\Util\Codes;
 use Mautic\ApiBundle\Controller\CommonApiController;
-use Mautic\CampaignBundle\Entity\Campaign;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 /**
@@ -24,7 +20,6 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
  */
 class ApiController extends CommonApiController
 {
-
     /**
      * @param FilterControllerEvent $event
      *
@@ -47,6 +42,4 @@ class ApiController extends CommonApiController
 
         parent::initialize($event);
     }
-
-
 }

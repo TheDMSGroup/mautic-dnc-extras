@@ -53,5 +53,4 @@ final class DncEvents
      * @var string
      */
     const PRE_SAVE = 'mautic.dnc_pre_save';
-
 }
