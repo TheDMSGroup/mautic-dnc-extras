@@ -100,6 +100,8 @@ class DncListItem extends FormEntity
         $builder->addUniqueConstraint(['name', 'channel'], 'name_channel');
 
         $builder->addIndex(['name'], 'name');
+
+        $builder->addIndex(['channel', 'is_published', 'date_added'], 'export');
     }
 
     /**
