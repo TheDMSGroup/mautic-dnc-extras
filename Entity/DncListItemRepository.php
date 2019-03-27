@@ -98,6 +98,35 @@ class DncListItemRepository extends CommonRepository
     }
 
     /**
+     * @param string $channel
+     * @param int    $start
+     * @param int    $limit
+     *
+     * @return array
+     */
+    public function getPublishedByChannel($channel = null, $start = 0, $limit = 1000)
+    {
+        $alias = $this->getTableAlias();
+        $q     = $this->createQueryBuilder($alias);
+
+        if ($channel) {
+            $q->where($alias.'.channel = :channel')
+                ->setParameter('channel', $channel);
+        } else {
+            $q->where($alias.'.channel IS NOT NULL');
+        }
+
+        $q->andWhere($alias.'.isPublished = 1');
+
+        $q->orderBy($alias.'.dateAdded', 'ASC');
+
+        $q->setFirstResult($start);
+        $q->setMaxResults($limit);
+
+        return $q->getQuery()->getResult();
+    }
+
+    /**
      * @param \Doctrine\ORM\QueryBuilder|\Doctrine\DBAL\Query\QueryBuilder $q
      * @param                                                              $filter
      *
