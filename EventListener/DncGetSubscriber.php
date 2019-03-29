@@ -81,12 +81,15 @@ class DncGetSubscriber extends CommonSubscriber
      */
     public function onGetDncEntities($event)
     {
-        $lead    =  $event->getLead();
-        $channel = $event->getChannel();
+        $lead      = $event->getLead();
+        $dncSearch = [];
+        if (method_exists($event, 'getChannel')) {
+            $channel   = $event->getChannel();
+            $dncSearch = $this->getChannelFieldValues($lead, $channel);
+        }
 
-        $dncSearch = $this->getChannelFieldValues($lead, $channel);
         if (empty($dncSearch)) {
-            return;
+            return $event;
         }
 
         $dbalQb = $this->em->getConnection()->createQueryBuilder()
