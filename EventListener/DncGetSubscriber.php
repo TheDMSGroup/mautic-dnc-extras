@@ -58,8 +58,7 @@ class DncGetSubscriber extends CommonSubscriber
                 }
                 break;
 
-            case 'sms':
-            case 'phone':
+            case 'Phone / SMS':
             default:
                 if ($lead->getPhone()) {
                     $channelFieldValues[] = $lead->getPhone();
