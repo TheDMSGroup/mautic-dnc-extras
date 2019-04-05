@@ -182,30 +182,4 @@ class DncListItemRepository extends CommonRepository
             [$this->getTableAlias().'.id', 'DESC'],
         ];
     }
-
-    /**
-     * @param object $entity
-     * @param bool   $flush
-     *
-     * @return int|void
-     *
-     * Normalize Phone data prior to saving
-     */
-    public function saveEntity($entity, $flush = true)
-    {
-        $value = trim($entity->getName());
-        if ('email' !== $entity->getChannel()) {
-            if (!$this->phoneHelper) {
-                $this->phoneHelper = new PhoneNumberHelper();
-            }
-            try {
-                $normalized = $this->phoneHelper->format($value);
-                if (!empty($normalized)) {
-                    $entity->setName($normalized);
-                }
-            } catch (\Exception $e) {
-            }
-        }
-        parent::saveEntity($entity, $flush);
-    }
 }
