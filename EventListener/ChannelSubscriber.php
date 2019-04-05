@@ -55,8 +55,10 @@ class ChannelSubscriber extends CommonSubscriber
         $integration = $this->helper->getIntegrationObject('DoNotContactExtras');
         if ($integration && $integration->getIntegrationSettings()->isPublished()) {
             $event->addChannel(
-                'Phone / SMS',
-                [LeadModel::CHANNEL_FEATURE => []]
+                'sms',
+                [LeadModel::CHANNEL_FEATURE => [
+                    'label' => "Phone / SMS",
+                ]]
             );
         }
     }

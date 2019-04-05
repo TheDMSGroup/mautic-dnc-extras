@@ -115,7 +115,7 @@ class DncListItemModel extends FormModel
             if (filter_var($fieldData['name'], FILTER_VALIDATE_EMAIL)) {
                 $dncListItem->setChannel('email');
             } else {
-                $dncListItem->setChannel('Phone / SMS');
+                $dncListItem->setChannel('sms');
             }
             $dncListItem->setName($fieldData['name']);
 
