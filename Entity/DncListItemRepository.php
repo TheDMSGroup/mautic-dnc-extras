@@ -12,6 +12,7 @@
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Entity;
 
 use Mautic\CoreBundle\Entity\CommonRepository;
+use Mautic\CoreBundle\Helper\PhoneNumberHelper;
 
 /**
  * Class DncListItemRepository.
@@ -85,13 +86,29 @@ class DncListItemRepository extends CommonRepository
         $q     = $this->createQueryBuilder($alias);
 
         if (isset($params['name'])) {
-            $q->where($alias.'.name = :name')
-                ->setParameter('name', $params['name']);
+            $q->where($alias.'.name = :name');
+
 
             if (isset($params['channel'])) {
                 $q->andWhere($alias.'.channel = :channel')
                     ->setParameter('channel', $params['channel']);
+
+                if($params['channel']!='email')
+                {
+                    // normalize the phone data before checking
+                    if (!$this->phoneHelper) {
+                        $this->phoneHelper = new PhoneNumberHelper();
+                    }
+                    try {
+                        $normalized = $this->phoneHelper->format($params['name']);
+                        if (!empty($normalized)) {
+                            $params['name'] = $normalized;
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
             }
+            $q->setParameter('name', $params['name']);
         }
 
         return $q->getQuery()->getResult();
@@ -166,5 +183,31 @@ class DncListItemRepository extends CommonRepository
         return [
             [$this->getTableAlias().'.id', 'DESC'],
         ];
+    }
+
+    /**
+     * @param object $entity
+     * @param bool   $flush
+     *
+     * @return int|void
+     *
+     * Normalize Phone data prior to saving.
+     */
+    public function saveEntity($entity, $flush = true)
+    {
+        $value = trim($entity->getName());
+        if ('email' !== $entity->getChannel()) {
+            if (!$this->phoneHelper) {
+                $this->phoneHelper = new PhoneNumberHelper();
+            }
+            try {
+                $normalized = $this->phoneHelper->format($value);
+                if (!empty($normalized)) {
+                    $entity->setName($normalized);
+                }
+            } catch (\Exception $e) {
+            }
+        }
+        parent::saveEntity($entity, $flush);
     }
 }
