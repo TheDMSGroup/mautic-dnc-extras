@@ -23,8 +23,7 @@ $customButtons['imports'] = [
     'tooltip'   => 'View existing imports or Upload items using a new csv file.',
     'primary'   => true,
 ];
-$channels                 = isset($_SESSION['_sf2_attributes']['mautic.mautic.donotcontactextras.channels']) ? $_SESSION['_sf2_attributes']['mautic.mautic.donotcontactextras.channels'] : [];
-foreach ($_SESSION['_sf2_attributes']['mautic.mautic.donotcontactextras.channels'] as $channel => $label) {
+foreach ($channels as $channel => $label) {
     $customButtons['export_'.$channel] = [
         'attr'      => [
             'class'       => 'btn btn-default',
