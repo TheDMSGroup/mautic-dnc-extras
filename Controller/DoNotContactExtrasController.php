@@ -157,9 +157,8 @@ class DoNotContactExtrasController extends FormController
             $args['viewParameters']['auditlog'] = $auditLog;
         }
 
-        if('index' == $view)
-        {
-            $channels = array_flip($this->get('mautic.lead.model.lead')->getPreferenceChannels());
+        if ('index' == $view) {
+            $channels                           = array_flip($this->get('mautic.lead.model.lead')->getPreferenceChannels());
             $args['viewParameters']['channels'] = $channels;
         }
 

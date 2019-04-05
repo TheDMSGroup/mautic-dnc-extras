@@ -57,7 +57,7 @@ class ChannelSubscriber extends CommonSubscriber
             $event->addChannel(
                 'sms',
                 [LeadModel::CHANNEL_FEATURE => [
-                    'label' => "Phone / SMS",
+                    'label' => 'Phone / SMS',
                 ]]
             );
         }

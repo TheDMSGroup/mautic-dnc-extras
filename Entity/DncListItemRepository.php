@@ -88,13 +88,11 @@ class DncListItemRepository extends CommonRepository
         if (isset($params['name'])) {
             $q->where($alias.'.name = :name');
 
-
             if (isset($params['channel'])) {
                 $q->andWhere($alias.'.channel = :channel')
                     ->setParameter('channel', $params['channel']);
 
-                if($params['channel']!='email')
-                {
+                if ('email' != $params['channel']) {
                     // normalize the phone data before checking
                     if (!$this->phoneHelper) {
                         $this->phoneHelper = new PhoneNumberHelper();
@@ -191,7 +189,7 @@ class DncListItemRepository extends CommonRepository
      *
      * @return int|void
      *
-     * Normalize Phone data prior to saving.
+     * Normalize Phone data prior to saving
      */
     public function saveEntity($entity, $flush = true)
     {
