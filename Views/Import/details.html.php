@@ -24,8 +24,8 @@ $view['slots']->set(
             'langVar'         => 'dnc.import',
             'templateButtons' => [
                 'close' => $view['security']->hasEntityAccess(
-                    $permissions['donotcontactextras:imports:viewown'],
-                    $permissions['donotcontactextras:imports:viewother'],
+                    $permissions['donotcontactextras:items:viewown'],
+                    $permissions['donotcontactextras:items:viewother'],
                     $item->getCreatedBy()
                 ),
             ],

@@ -12,7 +12,7 @@
 return [
     'name'        => 'Do Not Contact Extras',
     'description' => 'Adds a custom DNC entity and list, by channel',
-    'version'     => '1.0',
+    'version'     => '1.2',
     'author'      => 'Mautic',
 
     'routes'       => [
@@ -25,13 +25,20 @@ return [
                 'path'       => '/dnc/view/{objectId}',
                 'controller' => 'MauticDoNotContactExtrasBundle:DoNotContactExtras:view',
             ],
-            'mautic_dnc.import_index' => [
+            'mautic_dnc.import_index'          => [
                 'path'       => '/dnc/custom/import/{page}',
                 'controller' => 'MauticDoNotContactExtrasBundle:Import:index',
             ],
-            'mautic_dnc.import_action' => [
+            'mautic_dnc.import_action'         => [
                 'path'       => '/dnc/custom/import/{objectAction}/{objectId}',
                 'controller' => 'MauticDoNotContactExtrasBundle:Import:execute',
+            ],
+            'mautic_dnc.export_action'         => [
+                'path'       => '/dnc/custom/export/{channel}',
+                'controller' => 'MauticDoNotContactExtrasBundle:Export:export',
+                'defaults'   => [
+                    'channel' => '',
+                ],
             ],
             'mautic_donotcontactextras_action' => [
                 'path'         => '/dnc/{objectAction}/{objectId}',
@@ -40,6 +47,14 @@ return [
                     'objectAction' => '\w+',
                     'objectId'     => '\w+',
                 ],
+            ],
+        ],
+        'api'  => [
+            'mautic_api_donotcontactextras_standard' => [
+                'standard_entity' => true,
+                'name'            => 'donotcontactextras.dnclistitem',
+                'path'            => '/dnc',
+                'controller'      => 'MauticDoNotContactExtrasBundle:Api\Api',
             ],
         ],
     ],
@@ -69,7 +84,7 @@ return [
                     'mautic.helper.integration',
                 ],
             ],
-            'mautic.donotcontactextras.subscriber.dncget' => [
+            'mautic.donotcontactextras.subscriber.dncget'  => [
                 'class'     => \MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\DncGetSubscriber::class,
                 'arguments' => [],
             ],
@@ -78,7 +93,7 @@ return [
             'mautic.donotcontactextras.model.dnclistitem' => [
                 'class' => 'MauticPlugin\MauticDoNotContactExtrasBundle\Model\DncListItemModel',
             ],
-            'mautic.donotcontactextras.model.dncimport' => [
+            'mautic.donotcontactextras.model.dncimport'   => [
                 'class'     => MauticPlugin\MauticDoNotContactExtrasBundle\Model\DncImportModel::class,
                 'arguments' => [
                     'mautic.helper.paths',
@@ -97,11 +112,11 @@ return [
                     'mautic.lead.model.lead',
                 ],
             ],
-            'mautic.form.type.dnc_import' => [
+            'mautic.form.type.dnc_import'                     => [
                 'class' => 'MauticPlugin\MauticDoNotContactExtrasBundle\Form\Type\DncImportType',
                 'alias' => 'dnc_import',
             ],
-            'mautic.form.type.dnc_field_import' => [
+            'mautic.form.type.dnc_field_import'               => [
                 'class'     => 'MauticPlugin\MauticDoNotContactExtrasBundle\Form\Type\DncImportFieldType',
                 'arguments' => ['mautic.factory'],
                 'alias'     => 'dnc_field_import',

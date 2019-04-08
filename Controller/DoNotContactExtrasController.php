@@ -58,6 +58,7 @@ class DoNotContactExtrasController extends FormController
             $this->request   = $this->request->duplicate($query);
             $session->set('mautic.'.$this->getSessionBase().'.filter', $search);
         }
+        $session->set('mautic.donotcontactextras.channels', array_flip($this->get('mautic.lead.model.lead')->getPreferenceChannels()));
 
         return parent::indexStandard($page);
     }
@@ -153,10 +154,88 @@ class DoNotContactExtrasController extends FormController
 
             $auditLog = $this->getAuditlogs($item);
 
-            $args['viewParameters']['auditlog']        = $auditLog;
+            $args['viewParameters']['auditlog'] = $auditLog;
+        }
+
+        if ('index' == $view) {
+            $channels                           = array_flip($this->get('mautic.lead.model.lead')->getPreferenceChannels());
+            $args['viewParameters']['channels'] = $channels;
         }
 
         return $args;
+    }
+
+    /**
+     * @param DncListItem $dncListItem
+     * @param array|null  $filters
+     * @param array|null  $orderBy
+     * @param int         $page
+     * @param int         $limit
+     *
+     * @return array
+     */
+    protected function getAuditlogs(
+        DncListItem $dncListItem,
+        array $filters = null,
+        array $orderBy = null,
+        $page = 1,
+        $limit = 25
+    ) {
+        $session = $this->get('session');
+
+        if (null == $filters) {
+            $filters = $session->get(
+                'mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.filters',
+                [
+                    'search'        => '',
+                    'includeEvents' => [],
+                    'excludeEvents' => [],
+                ]
+            );
+        }
+
+        if (null == $orderBy) {
+            if (!$session->has('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby')) {
+                $session->set('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby', 'al.dateAdded');
+                $session->set('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderbydir', 'DESC');
+            }
+
+            $orderBy = [
+                $session->get('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby'),
+                $session->get('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderbydir'),
+            ];
+        }
+
+        // Audit Log
+        /** @var AuditLogModel $auditlogModel */
+        $auditlogModel = $this->getModel('core.auditLog');
+
+        $logs     = $auditlogModel->getLogForObject(
+            'donotcontactextras',
+            $dncListItem->getId(),
+            $dncListItem->getDateAdded()
+        );
+        $logCount = count($logs);
+
+        $types = [
+            'delete'     => $this->translator->trans('mautic.donotcontactextras.event.delete'),
+            'create'     => $this->translator->trans('mautic.donotcontactextras.event.create'),
+            'identified' => $this->translator->trans('mautic.donotcontactextras.event.identified'),
+            'ipadded'    => $this->translator->trans('mautic.donotcontactextras.event.ipadded'),
+            'merge'      => $this->translator->trans('mautic.donotcontactextras.event.merge'),
+            'update'     => $this->translator->trans('mautic.donotcontactextras.event.update'),
+        ];
+
+        return [
+            'events'   => $logs,
+            'filters'  => $filters,
+            'order'    => $orderBy,
+            'types'    => $types,
+            'total'    => $logCount,
+            'page'     => $page,
+            'limit'    => $limit,
+            'maxPages' => ceil($logCount / $limit),
+        ];
     }
 
     protected function getModelName()
@@ -239,79 +318,6 @@ class DoNotContactExtrasController extends FormController
         ];
 
         return $options;
-    }
-
-    /**
-     * @param DncListItem $dncListItem
-     * @param array|null  $filters
-     * @param array|null  $orderBy
-     * @param int         $page
-     * @param int         $limit
-     *
-     * @return array
-     */
-    protected function getAuditlogs(
-        DncListItem $dncListItem,
-        array $filters = null,
-        array $orderBy = null,
-        $page = 1,
-        $limit = 25
-    ) {
-        $session = $this->get('session');
-
-        if (null == $filters) {
-            $filters = $session->get(
-                'mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.filters',
-                [
-                    'search'        => '',
-                    'includeEvents' => [],
-                    'excludeEvents' => [],
-                ]
-            );
-        }
-
-        if (null == $orderBy) {
-            if (!$session->has('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby')) {
-                $session->set('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby', 'al.dateAdded');
-                $session->set('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderbydir', 'DESC');
-            }
-
-            $orderBy = [
-                $session->get('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderby'),
-                $session->get('mautic.donotcontactextras.'.$dncListItem->getId().'.auditlog.orderbydir'),
-            ];
-        }
-
-        // Audit Log
-        /** @var AuditLogModel $auditlogModel */
-        $auditlogModel = $this->getModel('core.auditLog');
-
-        $logs     = $auditlogModel->getLogForObject(
-            'donotcontactextras',
-            $dncListItem->getId(),
-            $dncListItem->getDateAdded()
-        );
-        $logCount = count($logs);
-
-        $types = [
-            'delete'     => $this->translator->trans('mautic.donotcontactextras.event.delete'),
-            'create'     => $this->translator->trans('mautic.donotcontactextras.event.create'),
-            'identified' => $this->translator->trans('mautic.donotcontactextras.event.identified'),
-            'ipadded'    => $this->translator->trans('mautic.donotcontactextras.event.ipadded'),
-            'merge'      => $this->translator->trans('mautic.donotcontactextras.event.merge'),
-            'update'     => $this->translator->trans('mautic.donotcontactextras.event.update'),
-        ];
-
-        return [
-            'events'   => $logs,
-            'filters'  => $filters,
-            'order'    => $orderBy,
-            'types'    => $types,
-            'total'    => $logCount,
-            'page'     => $page,
-            'limit'    => $limit,
-            'maxPages' => ceil($logCount / $limit),
-        ];
     }
 
     /**

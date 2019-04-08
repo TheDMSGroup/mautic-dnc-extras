@@ -15,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Mautic\ApiBundle\Serializer\Driver\ApiMetadataDriver;
 use Mautic\CoreBundle\Doctrine\Mapping\ClassMetadataBuilder;
 use Mautic\CoreBundle\Entity\FormEntity;
+use MauticPlugin\MauticDoNotContactExtrasBundle\Constraints\PhoneEmail;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -51,14 +53,31 @@ class DncListItem extends FormEntity
         $metadata->addPropertyConstraint(
             'name',
             new NotBlank(
-                ['message' => 'mautic.dnc_extras.name.required']
+                ['message' => 'mautic.dnc.name.required']
+            )
+        );
+
+        $metadata->addPropertyConstraint(
+            'name',
+            new PhoneEmail(
+                ['message' => 'mautic.dnc.name.phone_email']
             )
         );
 
         $metadata->addPropertyConstraint(
             'channel',
             new NotBlank(
-                ['message' => 'mautic.dnc_extras.channel.required']
+                ['message' => 'mautic.dnc.channel.required']
+            )
+        );
+
+        $metadata->addConstraint(
+            new UniqueEntity(
+                [
+                    'fields'           => ['name', 'channel'],
+                    'message'          => 'mautic.dnc.name.unique',
+                    'repositoryMethod' => 'checkUniqueNameChannel',
+                ]
             )
         );
     }
@@ -77,6 +96,12 @@ class DncListItem extends FormEntity
         $builder->addNamedField('channel', 'string', 'channel', false);
 
         $builder->addNamedField('reason', 'integer', 'reason', false);
+
+        $builder->addUniqueConstraint(['name', 'channel'], 'name_channel');
+
+        $builder->addIndex(['name'], 'name');
+
+        $builder->addIndex(['channel', 'is_published', 'date_added'], 'export');
     }
 
     /**
@@ -86,32 +111,15 @@ class DncListItem extends FormEntity
      */
     public static function loadApiMetadata(ApiMetadataDriver $metadata)
     {
-        $metadata->setGroupPrefix('Account')
+        $metadata->setGroupPrefix('dnclistitem')
             ->addListProperties(
                 [
-                    'id',
-                    'dateAdded',
                     'channel',
                     'name',
-                    'reason',
-                    'description',
                 ]
             )
             ->addProperties(
                 [
-                    'id',
-                    'dateAdded',
-                    'channel',
-                    'name',
-                    'reason',
-                    'description',
-                ]
-            )
-            ->setGroupPrefix('AccountBasic')
-            ->addListProperties(
-                [
-                    'id',
-                    'dateAdded',
                     'channel',
                     'name',
                     'reason',

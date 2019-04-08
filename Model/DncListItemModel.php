@@ -11,13 +11,20 @@
 namespace MauticPlugin\MauticDoNotContactExtrasBundle\Model;
 
 use Mautic\CoreBundle\Helper\InputHelper;
+use Mautic\CoreBundle\Helper\PhoneNumberHelper;
 use Mautic\CoreBundle\Model\FormModel;
 use Mautic\UserBundle\Entity\UserRepository;
+use MauticPlugin\MauticDoNotContactExtrasBundle\DncEvents;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
+use MauticPlugin\MauticDoNotContactExtrasBundle\Event\DncEvent;
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class DncListItemModel extends FormModel
 {
+    /** @var PhoneNumberHelper */
+    protected $phoneHelper;
+
     /**
      * @return string
      */
@@ -32,16 +39,6 @@ class DncListItemModel extends FormModel
     public function getActionRouteBase()
     {
         return 'DoNotContactExtras';
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @return \MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItemRepository
-     */
-    public function getRepository()
-    {
-        return $this->em->getRepository('MauticDoNotContactExtrasBundle:DncListItem');
     }
 
     /**
@@ -110,15 +107,15 @@ class DncListItemModel extends FormModel
             }
         }
 
-        $dncListItem   = $this->checkForDuplicateDncValue($fieldData);
-        $merged        = $dncListItem->getId();
+        $dncListItem = $this->checkForDuplicateDncValue($fieldData);
+        $merged      = $dncListItem->getId();
 
         // Not Merged
         if (empty($merged)) {
             if (filter_var($fieldData['name'], FILTER_VALIDATE_EMAIL)) {
                 $dncListItem->setChannel('email');
             } else {
-                $dncListItem->setChannel('phone');
+                $dncListItem->setChannel('sms');
             }
             $dncListItem->setName($fieldData['name']);
 
@@ -171,5 +168,74 @@ class DncListItemModel extends FormModel
         }
 
         return $dncListItem;
+    }
+
+    /**
+     * @return \MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItemRepository
+     */
+    public function getRepository()
+    {
+        return $this->em->getRepository('MauticDoNotContactExtrasBundle:DncListItem');
+    }
+
+    /**
+     * @param            $action
+     * @param            $entity
+     * @param bool       $isNew
+     * @param Event|null $event
+     *
+     * @return DncEvent|Event|\Symfony\Component\EventDispatcher\Event|null
+     */
+    protected function dispatchEvent($action, &$entity, $isNew = false, Event $event = null)
+    {
+        if (!$entity instanceof DncListItem) {
+            throw new MethodNotAllowedHttpException(['DncListItem']);
+        }
+
+        switch ($action) {
+            case 'pre_save':
+
+                // Normalize entries on pre-save, in case it is via API or import possibly skipping form validators.
+                $name  = DncEvents::PRE_SAVE;
+                $value = trim($entity->getName());
+                if ('email' !== $entity->getChannel()) {
+                    if (!$this->phoneHelper) {
+                        $this->phoneHelper = new PhoneNumberHelper();
+                    }
+                    try {
+                        $normalized = $this->phoneHelper->format($value);
+                        if (!empty($normalized)) {
+                            $entity->setName($normalized);
+                        }
+                    } catch (\Exception $e) {
+                    }
+                }
+
+                break;
+            case 'post_save':
+                $name = DncEvents::POST_SAVE;
+                break;
+            case 'pre_delete':
+                $name = DncEvents::PRE_DELETE;
+                break;
+            case 'post_delete':
+                $name = DncEvents::POST_DELETE;
+                break;
+            default:
+                return null;
+        }
+
+        if ($this->dispatcher->hasListeners($name)) {
+            if (empty($event)) {
+                $event = new DncEvent($entity, $isNew);
+                $event->setEntityManager($this->em);
+            }
+
+            $this->dispatcher->dispatch($name, $event);
+
+            return $event;
+        } else {
+            return null;
+        }
     }
 }
