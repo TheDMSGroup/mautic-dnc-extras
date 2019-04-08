@@ -94,9 +94,8 @@ class DncListItemRepository extends CommonRepository
 
                 if ('email' != $params['channel']) {
                     // normalize the phone data before checking
-                    if (!$phoneHelper) {
-                        $phoneHelper = new PhoneNumberHelper();
-                    }
+                    $phoneHelper = new PhoneNumberHelper();
+
                     try {
                         $normalized = $phoneHelper->format($params['name']);
                         if (!empty($normalized)) {
