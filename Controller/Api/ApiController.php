@@ -14,6 +14,7 @@ namespace MauticPlugin\MauticDoNotContactExtrasBundle\Controller\Api;
 use Mautic\ApiBundle\Controller\CommonApiController;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiController.
