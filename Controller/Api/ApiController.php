@@ -42,4 +42,31 @@ class ApiController extends CommonApiController
 
         parent::initialize($event);
     }
+
+    /**
+     * Creates a new entity.
+     *
+     * @return Response
+     */
+    public function newEntityAction()
+    {
+        $parameters = $this->request->request->all();
+        // convert reason to an int, if it exists.
+
+        if (is_string($parameters['reason'])) {
+            $parameters['reason'] = (int) $parameters['reason'];
+        }
+
+        if (empty($parameters['reason'])) {
+            $parameters['reason'] = 2;
+        }
+
+        $entity = $this->getNewEntity($parameters);
+
+        if (!$this->checkEntityAccess($entity, 'create')) {
+            return $this->accessDenied();
+        }
+
+        return $this->processForm($entity, $parameters, 'POST');
+    }
 }
