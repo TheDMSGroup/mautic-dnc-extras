@@ -59,7 +59,6 @@ class ApiController extends CommonApiController
         if (is_string($parameters['reason'])) {
             $parameters['reason'] = (int) $parameters['reason'];
         }
-
         $entity = $this->getNewEntity($parameters);
 
         if (!$this->checkEntityAccess($entity, 'create')) {
