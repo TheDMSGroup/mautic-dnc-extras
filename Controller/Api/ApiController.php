@@ -58,7 +58,7 @@ class ApiController extends CommonApiController
         }
 
         if (empty($parameters['reason'])) {
-            $parameters['reason'] = 2;
+            $parameters['reason'] = 3;
         }
 
         $entity = $this->getNewEntity($parameters);
