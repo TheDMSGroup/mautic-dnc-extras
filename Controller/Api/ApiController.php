@@ -51,14 +51,13 @@ class ApiController extends CommonApiController
     public function newEntityAction()
     {
         $parameters = $this->request->request->all();
-        // convert reason to an int, if it exists.
+        // handle reason code
+        if (!isset($parameters['reason']) || empty($parameters['reason'])) {
+            $parameters['reason'] = 3;
+        }
 
         if (is_string($parameters['reason'])) {
             $parameters['reason'] = (int) $parameters['reason'];
-        }
-
-        if (empty($parameters['reason'])) {
-            $parameters['reason'] = 3;
         }
 
         $entity = $this->getNewEntity($parameters);
