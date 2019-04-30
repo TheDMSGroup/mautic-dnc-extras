@@ -13,6 +13,7 @@ namespace MauticPlugin\MauticDoNotContactExtrasBundle\Controller\Api;
 
 use Mautic\ApiBundle\Controller\CommonApiController;
 use MauticPlugin\MauticDoNotContactExtrasBundle\Entity\DncListItem;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 /**
@@ -41,5 +42,30 @@ class ApiController extends CommonApiController
         define('MAUTIC_ACTIVITY_CHECKED', 1);
 
         parent::initialize($event);
+    }
+
+    /**
+     * Creates a new entity.
+     *
+     * @return Response
+     */
+    public function newEntityAction()
+    {
+        $parameters = $this->request->request->all();
+        // handle reason code
+        if (!isset($parameters['reason']) || empty($parameters['reason'])) {
+            $parameters['reason'] = 3;
+        }
+
+        if (is_string($parameters['reason'])) {
+            $parameters['reason'] = (int) $parameters['reason'];
+        }
+        $entity = $this->getNewEntity($parameters);
+
+        if (!$this->checkEntityAccess($entity, 'create')) {
+            return $this->accessDenied();
+        }
+
+        return $this->processForm($entity, $parameters, 'POST');
     }
 }

@@ -56,6 +56,10 @@ return [
                 'path'            => '/dnc',
                 'controller'      => 'MauticDoNotContactExtrasBundle:Api\Api',
             ],
+            'mautic_api_getdnclistitem' => [
+                'path'       => '/dnc/dnclistitem/{id}',
+                'controller' => 'MauticDoNotContactExtrasBundle:Api\Api:getDncListItem',
+            ],
         ],
     ],
     'menu'         => [
