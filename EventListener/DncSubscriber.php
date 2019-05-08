@@ -24,7 +24,6 @@ class DncSubscriber extends WebhookSubscriberBase
      */
     public function onDncPostDelete(DncEvent $event)
     {
-        $serializedGroups = [];
         $dncItem          = $event->getDncListItem();
         $lead             = $event->getLead();
         $payload          = [
@@ -33,7 +32,7 @@ class DncSubscriber extends WebhookSubscriberBase
         ];
         $webhookEvents = $this->getEventWebooksByType(DncEvents::POST_DELETE);
 
-        $this->webhookModel->queueWebhooks($webhookEvents, $payload, $serializedGroups);
+        $this->webhookModel->queueWebhooks($webhookEvents, $payload);
     }
 
     /**
@@ -41,7 +40,6 @@ class DncSubscriber extends WebhookSubscriberBase
      */
     public function onDncPostSave(DncEvent $event)
     {
-        $serializedGroups = [];
         $dncItem          = $event->getDncListItem();
         $lead             = $event->getLead();
         $payload          = [
@@ -50,6 +48,6 @@ class DncSubscriber extends WebhookSubscriberBase
         ];
         $webhookEvents = $this->getEventWebooksByType(DncEvents::POST_SAVE);
 
-        $this->webhookModel->queueWebhooks($webhookEvents, $payload, $serializedGroups);
+        $this->webhookModel->queueWebhooks($webhookEvents, $payload);
     }
 }
