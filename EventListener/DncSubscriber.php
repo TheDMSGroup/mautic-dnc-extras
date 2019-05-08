@@ -29,6 +29,7 @@ class DncSubscriber extends WebhookSubscriberBase
         $payload          = [
             'dnc_item' => $dncItem,
             'lead'     => $lead,
+            'action' => 'DELETED',
         ];
         $webhookEvents = $this->getEventWebooksByType(DncEvents::POST_DELETE);
 
@@ -45,6 +46,7 @@ class DncSubscriber extends WebhookSubscriberBase
         $payload          = [
             'dnc_item' => $dncItem,
             'lead'     => $lead,
+            'action' => 'CREATED_UPDATED',
         ];
         $webhookEvents = $this->getEventWebooksByType(DncEvents::POST_SAVE);
 
