@@ -70,7 +70,7 @@ class DncListItemModel extends FormModel
     /**
      * @param null $id
      *
-     * @return DncListItem|null|object
+     * @return DncListItem|object|null
      */
     public function getEntity($id = null)
     {
