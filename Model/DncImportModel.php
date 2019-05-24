@@ -636,7 +636,7 @@ class DncImportModel extends FormModel
      *
      * @param $id
      *
-     * @return null|object
+     * @return object|null
      */
     public function getEntity(
         $id = null

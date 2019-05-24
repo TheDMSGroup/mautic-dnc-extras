@@ -92,6 +92,14 @@ return [
                 'class'     => \MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\DncGetSubscriber::class,
                 'arguments' => [],
             ],
+            'mautic.donotcontactextras.subscriber.webhook'  => [
+                'class'     => \MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\WebhookSubscriber::class,
+                'arguments' => [],
+            ],
+            'mautic.donotcontactextras.subscriber.dnc_webhook'  => [
+                'class'     => \MauticPlugin\MauticDoNotContactExtrasBundle\EventListener\DncSubscriber::class,
+                'arguments' => [],
+            ],
         ],
         'models' => [
             'mautic.donotcontactextras.model.dnclistitem' => [
